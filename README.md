@@ -1,9 +1,9 @@
-## this repo uses git lfs, so to clone run: 
+# this repo uses git lfs, so to clone run: 
 
-# git clone --recurse-submodules git@github.com:MaxDLink/DM-lab1.git
+git clone --recurse-submodules git@github.com:MaxDLink/DM-lab1.git
 
-## If the repo is already cloned run: 
+# If the repo is already cloned, follow these steps: 
 
-# 1. git pull
+1. git pull
 
-# 2. git lfs 
+2. git lfs 
