@@ -1,5 +1,53 @@
-# reading in Mobility Report 
+# # =====================================================
+# # Title: Data Mining Lab 1
+# # Authors: Max Link, Logan Lu, Jadon Klipsch
+# # Date: 2025-02-21
+# # Description: In this project, we will focus on cleaning and understanding the data. You need to work on the following steps of the CRISP-DM framework
+# # =====================================================
+
+# reading in Mobility Report
 data <- read.csv('COVID-19/Global_Mobility_Report.csv')
 
-# displaying first 20 rows of report 
+# displaying first 20 rows of report
 head(data, 20)
+
+#   Crisp-DM Framework: 
+#   1. Problem Description (Business Understanding) [10]
+# Describe the Problem: What is COVID-19, and what is social distancing and flattening the
+# curve? Why is it important to look at data about the virus spread, hospitalizations, and
+# available resources? [3 points]
+# 
+# Choose a stakeholder for whom you analyze and, later on, model the data. Define some
+# questions that are important for this stakeholder. What decisions can your stakeholders make, and how would they affect COVID-19 outcomes? Brainstorm this a lot since this choice will guide your exploration of this and all the following projects. Make sure you can produce actionable recommendations for these questions using your data later in your report. [7 point]
+# 
+# 
+# 2. Data Understanding [45]
+# You must include all three provided datasets in your analysis!
+#   
+#   
+#   Describe what data is available. Choose 5-10 important variables for the questions you have identified in the section above. Describe the type of data (scale, values, etc.) of the most critical variables in the data. [9 point]
+# 
+# 
+# Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
+# 
+# Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
+# 
+# 
+# Visually explore the chosen attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
+# 
+# 
+# Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
+# 
+# 3. Data Preparation [30]
+# Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
+# 
+# When was the first case reported?
+#   How (densely) populated is the county?
+#   What resources does a county have (money, hospital)?
+#   What is the social distancing response, and how long did it take after the first case?
+#   You can come up with more critical questions for your chosen stakeholder.
+# 
+# 
+# 4. Data Preparation [15]
+# Formulate some recommendations for the questions developed in section 1. based on the results in 2. and 3. Make sure your recommendations are based on data and are actionable for the stakeholder (i.e., the stakeholder has the power to execute the
+#                                                                                                                                                                                                     recommendations). [15 points]
