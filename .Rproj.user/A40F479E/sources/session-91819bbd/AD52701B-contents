@@ -1,9 +1,9 @@
-=====================================================
+---
 Title: Data Mining Lab 1
 Authors: Max Link, Logan Lu, Jadon Klipsch
 Date: 2025-02-21
-Description: In this project, we will focus on cleaning and understanding the data. You need to work on the following steps of the CRISP-DM framework
-=====================================================
+Description: In this project, we will focus on cleaning and understanding the data. We will follow the Crisp-DM framework 
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
