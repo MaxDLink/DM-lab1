@@ -6,4 +6,4 @@ git clone --recurse-submodules git@github.com:MaxDLink/DM-lab1.git
 
 1. git pull
 
-2. git lfs 
+2. git lfs pull
