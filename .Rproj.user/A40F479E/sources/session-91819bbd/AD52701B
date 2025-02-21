@@ -1,9 +1,9 @@
 {
     "id": "AD52701B",
-    "path": "~/Desktop/dm-lab1/lab1.R",
-    "project_path": "lab1.R",
+    "path": "~/Desktop/dm-lab1/lab1.Rmd",
+    "project_path": "lab1.Rmd",
     "type": "r_source",
-    "hash": "0",
+    "hash": "1300759582",
     "contents": "",
     "dirty": false,
     "created": 1740153447809.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "12,0",
-        "scrollLine": "0"
+        "cursorPosition": "7,0",
+        "scrollLine": "4"
     },
     "folds": "",
-    "lastKnownWriteTime": 1740154542,
+    "lastKnownWriteTime": 1740154856,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1740154542871,
+    "last_content_update": 1740154886096,
     "read_only": false,
     "read_only_alternatives": []
 }
