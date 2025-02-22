@@ -16,13 +16,21 @@ library(tidyr)      # For cleaning data
 ```
 ```{r dataframe}
 # reading in Mobility Report
-data <- read.csv('COVID-19/Global_Mobility_Report.csv')
+mobility_data <- read.csv('COVID-19/Global_Mobility_Report.csv')
+texas_cases <- read.csv('COVID-19/COVID-19_cases_TX.csv') 
+cases_plus <- read.csv('COVID-19/COVID-19_cases_plus_census.csv')
 
 # displaying first 20 rows of report
-head(data, 20)
+head(mobility_data, 20)
+
+# texas cases 
+head(texas_cases, 20)
+# + cases 
+head(cases_plus, 20)
 ```
 
 Crisp-DM Framework:
+
 1. Problem Description (Business Understanding) [10]
 Describe the Problem: What is COVID-19, and what is social distancing and flattening the
 curve? Why is it important to look at data about the virus spread, hospitalizations, and
@@ -37,17 +45,18 @@ Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical d
 
 Questions for J&J:
 
-How does population density affect COVID-19 transmission rates across U.S. counties?
+1. How does population density affect COVID-19 transmission rates across U.S. counties?
 
-What is the relationship between social distancing compliance (mobility changes) and case growth?
+2. What is the relationship between social distancing compliance (mobility changes) and case growth?
 
-How do hospital resources (e.g., beds per capita) correlate with mortality rates?
+3. How do hospital resources (e.g., beds per capita) correlate with mortality rates?
 
-Which counties showed delayed social distancing responses, and how did this impact case surges?
+4. Which counties showed delayed social distancing responses, and how did this impact case surges?
 
-What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
+5. What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
 
-Johson and Johnson can make the following decisions: 
+Johnson and Johnson can make the following decisions:
+
 - Prioritize vaccine or medical supply distribution to high-risk, densely populated areas.
 
 - Partner with counties lacking resources to provide equipment or therapeutics.
@@ -56,9 +65,57 @@ Johson and Johnson can make the following decisions:
 
 
  2. Data Understanding [45]
- You must include all three provided datasets in your analysis!
+ 
+# Must include all three provided datasets in your analysis!
 
 Describe what data is available. Choose 5-10 important variables for the questions you have identified in the section above. Describe the type of data (scale, values, etc.) of the most critical variables in the data. [9 point]
+
+Data Available: 
+
+1. Global_Mobility_Report.csv: [insert info]  
+
+2. COVID-19 Case Data (hypothetical):  [insert info]  
+
+3. County Resources Data (hypothetical): [insert info]  
+
+# Questions to answer: 
+
+1. How does population density affect COVID-19 transmission rates across U.S. counties?
+
+2. What is the relationship between social distancing compliance (mobility changes) and case growth?
+
+3. How do hospital resources (e.g., beds per capita) correlate with mortality rates?
+
+4. Which counties showed delayed social distancing responses, and how did this impact case surges?
+
+5. What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
+
+
+# 10 important variables (critical *): 
+
+1. 
+
+2. 
+
+3. 
+
+4. 
+
+5. 
+
+6. 
+
+7. 
+
+8. 
+
+9. 
+
+10. 
+
+# Description of critical variables: 
+
+..... 
 
 
 Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
