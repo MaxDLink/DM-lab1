@@ -8,7 +8,12 @@ Description: In this project, we will focus on cleaning and understanding the da
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+```{r} 
+# Load required libraries
+library(dplyr)      # For data manipulation
+library(ggplot2)    # For visualizations
+library(tidyr)      # For cleaning data
+```
 ```{r dataframe}
 # reading in Mobility Report
 data <- read.csv('COVID-19/Global_Mobility_Report.csv')
@@ -23,10 +28,31 @@ Describe the Problem: What is COVID-19, and what is social distancing and flatte
 curve? Why is it important to look at data about the virus spread, hospitalizations, and
 available resources? [3 points]
 
+COVID-19 is a highly contagious respiratory illness caused by the SARS-CoV-2 virus, first identified in late 2019. Social distancing involves reducing physical interactions to slow the virus’s spread, aiming to "flatten the curve"—i.e., reduce the peak number of cases to avoid overwhelming healthcare systems. Analyzing data on virus spread, hospitalizations, and resources is critical to understand transmission patterns, predict healthcare demands, and develop effective interventions (e.g., vaccines or supplies by Johnson & Johnson). 
+
 Choose a stakeholder for whom you analyze and, later on, model the data. Define some
 questions that are important for this stakeholder. What decisions can your stakeholders make, and how would they affect COVID-19 outcomes? Brainstorm this a lot since this choice will guide your exploration of this and all the following projects. Make sure you can produce actionable recommendations for these questions using your data later in your report. [7 point]
 
-Our stakeholder is the medical company Johnson and Johnson. Johnson and Johnson wants to know how covid spreads in different situations… The questions we need to answer are …. These questions give us a deeper understanding of … The important data for us is …
+Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical devices, and consumer health products.
+
+Questions for J&J:
+
+How does population density affect COVID-19 transmission rates across U.S. counties?
+
+What is the relationship between social distancing compliance (mobility changes) and case growth?
+
+How do hospital resources (e.g., beds per capita) correlate with mortality rates?
+
+Which counties showed delayed social distancing responses, and how did this impact case surges?
+
+What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
+
+Johson and Johnson can make the following decisions: 
+- Prioritize vaccine or medical supply distribution to high-risk, densely populated areas.
+
+- Partner with counties lacking resources to provide equipment or therapeutics.
+
+- Adjust production timelines based on predicted surges linked to mobility patterns.
 
 
  2. Data Understanding [45]
