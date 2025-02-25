@@ -135,7 +135,7 @@ We have quite a few missing values in the mobility data, so lets get rid of the 
 
 ```{r}
 # remove rows that have missing data 
-clean_mobility_data <- na.omit(mobility_data | | mobility_data == "")
+clean_mobility_data <- na.omit(mobility_data)
 
 # verify the number of rows before and after removal 
 print(paste("Original number of rows in mobility_data:", nrow(mobility_data)))
@@ -146,6 +146,9 @@ missing_clean_mobility <- colSums(is.na(clean_mobility_data))
 print("Missing values in clean_mobility_data:")
 print(missing_clean_mobility)
 
+# manually remove metro_area and iso because those columns are blank 
+clean_mobility_data <- clean_mobility_data[, !names(clean_mobility_data) %in% c("metro_area", "iso_3166_2_code")]
+
 # display the first few rows of the cleaned data 
 head(clean_mobility_data)
 
@@ -154,6 +157,10 @@ write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 ```
 # Does clean_mobility_data have any other values that need to be changed? 
+
+We do not have to change any of the other values. The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
+
+We can merge this .csv with the other two datasets later on. 
 
 
 # 2. Check for missing values in texas_cases
@@ -166,8 +173,23 @@ print(missing_texas)
 write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
  
 ```
-# Does COVID-19_cases_TX.csv have any other values that need to be changed? 
+# Does clean_texas_cases.csv have any other values that need to be changed? 
 
+Date_Updated --> convert to a proper date format for timer series analysis/merging. We can do weekly totals or Rolling Averages 
+
+County_name --> standardize & ensure consistency for merging with other .csvs
+
+state --> standardize & ensure consistency for merging with other .csvs 
+
+county_fips_code --> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data
+
+state_fips_Code --> standardize & ensure consistency for merging with other .csvs 
+
+keep or drop: state & state_fips_code 
+
+cases & deaths --> aggregation? standardization/rates, outlier detection, scaling/standardization for models? 
+
+Possible correlation analysis 
 
 # 3. Check for missing values in cases_plus 
 
@@ -233,6 +255,30 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 ```
 
 # Does cases_plus have any other values that need to be changed? 
+
+Date --> convert to proper date for time series 
+
+Geographic identifier: 
+
+Country_fips_code --> standardize & check consistency for merging 
+
+County_name --> standardize & check consistency for merging  
+
+state --> standardize & check consistency for merging  
+
+cases & deaths --> aggregation? Standardization/rates, outlier detection 
+
+Public_transport_users --> convert to rates 
+
+parents_in_labor_force --> proportion (with family_households or total_pop if it is a count) 
+
+Rent --> Ensure numeric? Standardize? 
+
+Race_population --> Can we split this? Ensure numeric. Can we make proportions? 
+
+Median_Income --> Ensure numeric
+
+Median_Year_Structure_Built --> Ensure Numeric. Show as decades? 
 
 
 # Statistics 
