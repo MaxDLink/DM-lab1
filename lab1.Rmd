@@ -160,7 +160,7 @@ write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 We do not have to change any of the other values. The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
 
-We can merge this .csv with the other two datasets later on. 
+We can merge this .csv with the other two data sets later on. 
 
 
 # 2. Check for missing values in texas_cases
@@ -170,16 +170,45 @@ missing_texas <- colSums(is.na(texas_cases))
 print("Missing values in texas_cases:")
 print(missing_texas)
 
-write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
- 
+head(texas_cases)
+
 ```
+
+
 # Does clean_texas_cases.csv have any other values that need to be changed? 
 
-Date_Updated --> convert to a proper date format for timer series analysis/merging. We can do weekly totals or Rolling Averages 
+We want to convert the date field from <chr> to <date> so that we can do time series analysis, weekly totals, or rolling averages for the date. This would also allow us to merge into a new dataset later. 
 
-County_name --> standardize & ensure consistency for merging with other .csvs
+```{r}
+head(texas_cases, 20)
 
-state --> standardize & ensure consistency for merging with other .csvs 
+# update the date column to Date format 
+texas_cases$date <- as.Date(texas_cases$date, format = "%Y-%m-%d")
+
+# verify the updated data
+print("Updated structure of texas_cases:")
+str(texas_cases)
+print("First 20 rows of updated texas_cases with Date format")
+head(texas_cases, 20)
+
+# write to .csv 
+write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
+
+```
+
+Next, we can take county_name and state, and standardize them. We want to ensure they are consistent for merging with the county fields in the other .csv's later on. 
+
+```{r}
+# county_name, state --> standardize & ensure consistency for merging with other .csvs
+head(texas_cases, 5)
+
+texas_cases$county_name <- tolower(texas_cases$county_name)
+texas_cases$state <- tolower(texas_cases$state)
+
+head(texas_cases, 5)
+
+``` 
+
 
 county_fips_code --> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data
 
@@ -189,7 +218,7 @@ keep or drop: state & state_fips_code
 
 cases & deaths --> aggregation? standardization/rates, outlier detection, scaling/standardization for models? 
 
-Possible correlation analysis 
+Possible correlation analysis with other two .csv's?  
 
 # 3. Check for missing values in cases_plus 
 
@@ -198,6 +227,7 @@ missing_cases_plus <- colSums(is.na(cases_plus))
 print("Missing values in cases_plus:")
 print(missing_cases_plus)
 ```
+
 We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent. 
 
 
@@ -293,6 +323,7 @@ Explore relationships between attributes: Look at the attributes and then use cr
 
 
 3. Data Preparation [30]
+
 Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
 
 
@@ -302,6 +333,13 @@ What resources does a county have (money, hospital)?
 What is the social distancing response, and how long did it take after the first case?
 You can come up with more critical questions for your chosen stakeholder.
 
+# [dataset]
+
 
 4. Data Preparation [15]
+
 Formulate some recommendations for the questions developed in section 1. based on the results in 2. and 3. Make sure your recommendations are based on data and are actionable for the stakeholder (i.e., the stakeholder has the power to execute the recommendations). [15 points]
+
+# recs for questions in section 1 
+
+[recs based on results in 2 and 3, based on data & actionable for J&J]
