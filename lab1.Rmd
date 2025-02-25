@@ -93,25 +93,25 @@ Data Available:
 
 # 10 important variables (critical *): 
 
-1. 
+1. Median_Income (cases_plus.csv): Explore how income levels correlate with Covid-19 cases or deaths, addressing "How does income affect covid status?" 
 
-2. 
+2. Race_Population (cases_plus.csv): Does race affect covid status? Are there racial disparities in the data? 
 
-3. 
+3. County_Name (texas_cases.csv) or County, State (cases_plus.csv): Compare urban vs rural counties & their impact on covid-19 status. City vs country 
 
-4. 
+4. Public_Transportation_Users (cases_plus.csv): Does higher public transit use correlates with higher case rates? 
 
-5. 
+5. Parents_in_labor_force (cases_plus.csv): Does parental labor force participation influences transmission rates? 
 
-6. 
+* 6. confirmed_cases (texas_cases.csv or cases_plus.csv): Primary outcome variable to measure infection rates across other ?s  
 
-7. 
+* 7.Deaths (texas_cases.csv or cases_plus.csv): Critical variable to assess mortality/severity of Covid-19  
 
-8. 
+8. Rent (cases_plus.csv): proxy for housing cost & potential overcrowding, which could affect transmission risk 
 
-9. 
+9. Year_House_Built (cases_plus.csv): The house age could cause poor ventilation which may affect transmission risk? 
 
-10. 
+10. Transit_stations_percent_change_from_baseline (mobility_data.csv, if us data included): Links mobility changes at transit hubs to public transportation use & case rates, if geographically compatible with U.S. counties 
 
 # Description of critical variables: 
 
@@ -120,6 +120,96 @@ Data Available:
 
 Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
 
+
+# 1. Check for missing values in mobility_data 
+
+we can use colSums function to count the missing values in each column of the data 
+
+```{r}
+missing_mobility <- colSums(is.na(mobility_data))
+print("Missing values in mobility_data:")
+print(missing_mobility) 
+```
+
+We have quite a few missing values in the mobility data, so lets get rid of the rows that contain the missing values. To do this, we can use the na.omit function and then verify by comparing the original mobility data with a cleaned mobility data. 
+
+```{r}
+# remove rows that have missing data 
+clean_mobility_data <- na.omit(mobility_data)
+
+# verify the number of rows before and after removal 
+print(paste("Original number of rows in mobility_data:", nrow(mobility_data)))
+print(paste("Number of rows after removing missing values:", nrow(clean_mobility_data)))
+
+# check for missing values again to confirm. This shows zero missing values 
+missing_clean_mobility <- colSums(is.na(clean_mobility_data))
+print("Missing values in clean_mobility_data:")
+print(missing_clean_mobility)
+
+# display the first few rows of the cleaned data 
+head(clean_mobility_data)
+
+```
+# 2. Check for missing values in texas_cases
+
+```{r}
+missing_texas <- colSums(is.na(texas_cases))
+print("Missing values in texas_cases:")
+print(missing_texas)
+```
+
+# 3. Check for missing values in cases_plus 
+
+```{r}
+missing_cases_plus <- colSums(is.na(cases_plus))
+print("Missing values in cases_plus:")
+print(missing_cases_plus)
+```
+We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent. 
+
+```{r}
+# Get the total number of rows in cases_plus
+total_rows <- nrow(cases_plus)
+
+# Count missing values in each column
+missing_counts <- colSums(is.na(cases_plus))
+
+# Debug: Print the missing counts to check values
+print("Missing value counts in cases_plus:")
+print(missing_counts)
+
+# Identify columns with missing values equal to the total number of rows (completely empty)
+empty_columns <- names(missing_counts[missing_counts == total_rows])
+
+# Debug: Print the empty columns to verify
+print("Columns identified as completely empty:")
+print(empty_columns)
+
+# Remove completely empty columns from cases_plus
+cases_plus_cleaned <- cases_plus[, !names(cases_plus) %in% empty_columns]
+
+# Verify the number of columns before and after removal
+print(paste("Original number of columns in cases_plus:", ncol(cases_plus)))
+print(paste("Number of columns after removing empty columns:", ncol(cases_plus_cleaned))) 
+
+# --------- 
+# now remove rows with any remaining missing values (e.g., in median_rent, which has 2 NAs)
+clean_cases_plus_final <- na.omit(cases_plus_cleaned)
+
+# verify the number of rows before and after each step
+print(paste("Original number of rows in cases_plus:", nrow(cases_plus)))
+print("empty columns: ", length(empty_columns))
+print(paste("Number of rows after removing empty columns:", nrow(cases_plus_cleaned)))
+print(paste("Number of rows after removing rows with any remaining missing values:", nrow(clean_cases_plus_final)))
+
+# check for missing values in the final cleaned dataset to confirm
+missing_final <- colSums(is.na(clean_cases_plus_final))
+print("Missing values in clean_cases_plus_final:")
+print(missing_final)
+
+# display the first few rows of the final cleaned dataset
+head(clean_cases_plus_final)
+```
 
 Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
 
