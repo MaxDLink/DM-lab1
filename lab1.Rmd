@@ -115,7 +115,7 @@ Data Available:
 
 # Description of critical variables: 
 
-..... 
+The confirmed_cases and Deaths are critical values because they let us answer our other questions about spread and intensity 
 
 
 Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
@@ -126,7 +126,7 @@ Verify data quality: Are there missing values? Duplicate Data? Outliers? Are tho
 we can use colSums function to count the missing values in each column of the data 
 
 ```{r}
-missing_mobility <- colSums(is.na(mobility_data))
+missing_mobility <- colSums(is.na(mobility_data) | mobility_data == "")
 print("Missing values in mobility_data:")
 print(missing_mobility) 
 ```
@@ -135,7 +135,7 @@ We have quite a few missing values in the mobility data, so lets get rid of the 
 
 ```{r}
 # remove rows that have missing data 
-clean_mobility_data <- na.omit(mobility_data)
+clean_mobility_data <- na.omit(mobility_data | | mobility_data == "")
 
 # verify the number of rows before and after removal 
 print(paste("Original number of rows in mobility_data:", nrow(mobility_data)))
@@ -149,14 +149,25 @@ print(missing_clean_mobility)
 # display the first few rows of the cleaned data 
 head(clean_mobility_data)
 
+# write cleaned mobility_data to a CSV file
+write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
+
 ```
+# Does clean_mobility_data have any other values that need to be changed? 
+
+
 # 2. Check for missing values in texas_cases
 
 ```{r}
 missing_texas <- colSums(is.na(texas_cases))
 print("Missing values in texas_cases:")
 print(missing_texas)
+
+write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
+ 
 ```
+# Does COVID-19_cases_TX.csv have any other values that need to be changed? 
+
 
 # 3. Check for missing values in cases_plus 
 
@@ -167,7 +178,9 @@ print(missing_cases_plus)
 ```
 We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent. 
 
+
 ```{r}
+
 # Get the total number of rows in cases_plus
 total_rows <- nrow(cases_plus)
 
@@ -192,6 +205,11 @@ cases_plus_cleaned <- cases_plus[, !names(cases_plus) %in% empty_columns]
 print(paste("Original number of columns in cases_plus:", ncol(cases_plus)))
 print(paste("Number of columns after removing empty columns:", ncol(cases_plus_cleaned))) 
 
+```
+
+Finish cleaning by removing any missing values in other columns like median_rent 
+
+```{r}
 # --------- 
 # now remove rows with any remaining missing values (e.g., in median_rent, which has 2 NAs)
 clean_cases_plus_final <- na.omit(cases_plus_cleaned)
@@ -209,7 +227,15 @@ print(missing_final)
 
 # display the first few rows of the final cleaned dataset
 head(clean_cases_plus_final)
+
+write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
+
 ```
+
+# Does cases_plus have any other values that need to be changed? 
+
+
+# Statistics 
 
 Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
 
