@@ -158,9 +158,23 @@ write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 ```
 # Does clean_mobility_data have any other values that need to be changed? 
 
-We do not have to change any of the other values. The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
+The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
 
-We can merge this .csv with the other two data sets later on. 
+The census_fips_code should be changed to always have five digits. We can fix this with zeros. 
+
+```{r}
+
+
+clean_mobility_data$census_fips_code <- sprintf("%05d", as.numeric(clean_mobility_data$census_fips_code))
+
+
+head(clean_mobility_data, 10)
+
+write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
+
+# TODO - Why do 3082841, 3082842, etc. numbers show up in the first row? 
+
+```
 
 
 # 2. Check for missing values in texas_cases
@@ -210,15 +224,46 @@ head(texas_cases, 5)
 ``` 
 
 
-county_fips_code --> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data
+county_fips_code --> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data. Coordinate with state pip in clean_cases_plus_final.csv to match all texas with their texas pips 
 
 state_fips_Code --> standardize & ensure consistency for merging with other .csvs 
 
-keep or drop: state & state_fips_code 
+```{r}
+# make county_fips_code five digits 
+# make state_fips_code two digits 
 
-cases & deaths --> aggregation? standardization/rates, outlier detection, scaling/standardization for models? 
+texas_cases$county_fips_code <- sprintf("%05d", as.numeric(texas_cases$county_fips_code))
+texas_cases$state_fips_code <- sprintf("%02d", as.numeric(texas_cases$state_fips_code))
 
-Possible correlation analysis with other two .csv's?  
+head(texas_cases, 10)
+
+write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
+
+
+
+```
+state should be kept for merging with clean_mobility_data.csv
+
+we can aggregate the cases & deaths, standardize them and make them rates, and do outlier detection. 
+
+
+We can aggregate by the county_name 
+
+```{r}
+# Aggregate confirmed_cases and deaths by county_name, including "statewide unallocated"
+texas_cases_aggregated <- texas_cases %>%
+  group_by(county_name) %>%
+  summarise(total_confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            total_deaths = sum(deaths, na.rm = TRUE)) %>%
+  ungroup()
+
+# Verify the aggregated data
+print("Aggregated confirmed_cases and deaths by county_name (first 5 rows):")
+head(texas_cases_aggregated, 5)
+
+```
+
+To change the data into rates and look for outliers, we need to do data cleaning in cases_plus because we need its population information. 
 
 # 3. Check for missing values in cases_plus 
 
@@ -286,11 +331,36 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 
 # Does cases_plus have any other values that need to be changed? 
 
-Date --> convert to proper date for time series 
+We can convert the date from <chr> to <date> format for time series analysis. 
 
-Geographic identifier: 
+```{r}
+head(clean_cases_plus_final, 10)
 
-Country_fips_code --> standardize & check consistency for merging 
+
+# update the date column to Date format 
+clean_cases_plus_final$date <- as.Date(clean_cases_plus_final$date, format = "%Y-%m-%d")
+
+# verify the updated data
+print("Updated structure of clean_cases_plus_final:")
+str(clean_cases_plus_final)
+print("First 5 rows of updated texas_cases with Date format")
+head(clean_cases_plus_final, 20)
+write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
+
+
+``` 
+
+Looking at the geographic identifiers: 
+
+The state_fips_code and county_fips_code may be standardized. The state_fips_code must have always have two digits and the county_fips_code must always have five digits. We can fix this with zeros.
+
+```{r}
+# number stored as text error on line 9 adding a zero in front & it is moving numbers over 
+clean_cases_plus_final$county_fips_code <- sprintf("%05d", as.numeric(clean_cases_plus_final$county_fips_code))
+clean_cases_plus_final$state_fips_code <- sprintf("%02d", as.numeric(clean_cases_plus_final$state_fips_code))
+
+head(clean_cases_plus_final, 20)
+```
 
 County_name --> standardize & check consistency for merging  
 
@@ -311,6 +381,8 @@ Median_Income --> Ensure numeric
 Median_Year_Structure_Built --> Ensure Numeric. Show as decades? 
 
 
+
+
 # Statistics 
 
 Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
@@ -320,6 +392,26 @@ Visually explore the chosen attributes appropriately. Provide an interpretation 
 
 
 Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
+
+
+## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers  
+
+We can make the data in texas_cases rates to make it comparable across regions. This is important because counties have different population densities, so in order to make the counties comparable we should adjust for different population sizes. This will avoid raw counts, so our data will be more accurate.We will use the population from clean_cases_plus_final.csv so that we can change the data to rates. 
+
+```{r}
+# use clean_cases_plus_final.csv population 
+
+```
+
+Outlier detection identifies extreme values in cases and deaths that could skew the analysis. Large counties could have extremely high death rates, which would change averages. Outlier could be real cases, or they could be errors in data. We must judge whether to keep them or not. 
+
+```{r}
+# outlier detection 
+
+```
+
+# Possible correlation analysis with other two .csv's? cor() function   
+
 
 
 3. Data Preparation [30]
