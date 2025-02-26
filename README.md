@@ -1,11 +1,17 @@
-# this repo uses git lfs, so to clone run: 
+## this repo uses git lfs, so to clone run: 
 
 git clone --recurse-submodules git@github.com:MaxDLink/DM-lab1.git
 
-# If the repo is already cloned, follow these steps: 
+## If the repo is already cloned, follow these steps: 
 
 1. git pull
 
 2. git lfs pull
 
 Run each code block individually, or under run select "restart R and run all chunks" 
+
+## Files to work with 
+
+lab1.Rmd <-- R markdown file where we will do analysis 
+
+lab1.html <-- html preview of lab1.Rmd. Knit lab1.Rmd on save in R studio to update this .html automatically after every file save
