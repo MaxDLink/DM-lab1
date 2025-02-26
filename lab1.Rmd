@@ -360,11 +360,24 @@ clean_cases_plus_final$county_fips_code <- sprintf("%05d", as.numeric(clean_case
 clean_cases_plus_final$state_fips_code <- sprintf("%02d", as.numeric(clean_cases_plus_final$state_fips_code))
 
 head(clean_cases_plus_final, 20)
+
+write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 ```
 
-County_name --> standardize & check consistency for merging  
+We can make the county_name and state columns lowercase 
 
-state --> standardize & check consistency for merging  
+```{r}
+# Convert county_name and state to lowercase
+clean_cases_plus_final$county_name <- tolower(clean_cases_plus_final$county_name)
+clean_cases_plus_final$state <- tolower(clean_cases_plus_final$state)
+
+# Verify the changes (first 5 rows)
+head(clean_cases_plus_final, 5)
+
+# Write the updated clean_cases_plus_final to a CSV file
+write.csv(clean_cases_plus_final, "updated_clean_cases_plus_final.csv", row.names = FALSE)
+
+```
 
 cases & deaths --> aggregation? Standardization/rates, outlier detection 
 
