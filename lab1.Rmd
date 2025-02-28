@@ -5,15 +5,20 @@ Date: 2025-02-21
 Description: In this project, we will focus on cleaning and understanding the data. We will follow the Crisp-DM framework 
 ---
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-```{r} 
-# Load required libraries
+
+
+# Load required libraries!
 library(dplyr)      # For data manipulation
 library(ggplot2)    # For visualizations
 library(tidyr)      # For cleaning data
 ```
+
+
+
 ```{r dataframe}
 # reading in Mobility Report
 mobility_data <- read.csv('COVID-19/Global_Mobility_Report.csv')
