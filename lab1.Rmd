@@ -11,7 +11,7 @@ Description: In this project, we will focus on cleaning and understanding the da
 knitr::opts_chunk$set(echo = TRUE)
 
 
-# Load required libraries!
+# Load required libraries!!
 library(dplyr)      # For data manipulation
 library(ggplot2)    # For visualizations
 library(tidyr)      # For cleaning data
