@@ -45,6 +45,7 @@ Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical d
 
 Questions for J&J:
 
+# TODO - update these questions to be like below 
 1. How does population density affect COVID-19 transmission rates across U.S. counties?
 
 2. What is the relationship between social distancing compliance (mobility changes) and case growth?
@@ -428,6 +429,8 @@ Outlier detection identifies extreme values in cases and deaths that could skew 
 
 
 3. Data Preparation [30]
+
+# put all counties in a table and aggregate their total cases/deaths and look at the amount of transportation in that column. More transportation means more cases? Less cases? Joining mobility data and census data (cases plus or texas cases) --- we must use US counties as the objects 
 
 Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
 
