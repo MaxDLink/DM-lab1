@@ -202,7 +202,7 @@ We want to convert the date field from <chr> to <date> so that we can do time se
 ```{r}
 head(texas_cases, 20)
 
-# update the date column to Date format 
+# update the date column to Date format! 
 texas_cases$date <- as.Date(texas_cases$date, format = "%Y-%m-%d")
 
 # verify the updated data
