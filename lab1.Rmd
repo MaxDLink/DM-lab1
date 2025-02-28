@@ -45,7 +45,7 @@ Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical d
 
 Questions for J&J:
 
-# TODO - update these questions to be like below 
+# TODO - -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116 
 1. How does population density affect COVID-19 transmission rates across U.S. counties?
 
 2. What is the relationship between social distancing compliance (mobility changes) and case growth?
@@ -79,7 +79,7 @@ Data Available:
 
 3. County Resources Data (hypothetical): [insert info]  
 
-# Questions to answer: 
+# Questions to answer: -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116 
 
 1. How does population density affect COVID-19 transmission rates across U.S. counties?
 
@@ -451,3 +451,5 @@ Formulate some recommendations for the questions developed in section 1. based o
 # recs for questions in section 1 
 
 [recs based on results in 2 and 3, based on data & actionable for J&J]
+
+Does masking help reduce the number of cases and deaths? Does staying home affect the number of cases and deaths? Vaccinations? House age? 
