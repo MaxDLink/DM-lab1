@@ -176,6 +176,11 @@ clean_mobility_data$census_fips_code <- sprintf("%05d", as.numeric(clean_mobilit
 
 head(clean_mobility_data, 10)
 
+# Filter clean_mobility_data to include only Texas in sub_region_1
+clean_mobility_data <- clean_mobility_data %>%
+  filter(tolower(sub_region_1) == "texas")
+
+# Write the filtered dataframe to clean_mobility_data.csv
 write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 # TODO - Why do 3082841, 3082842, etc. numbers show up in the first row? 
