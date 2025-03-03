@@ -11,7 +11,7 @@ Description: In this project, we will focus on cleaning and understanding the da
 knitr::opts_chunk$set(echo = TRUE)
 
 
-# Load required libraries!
+# Load required libraries!!
 library(dplyr)      # For data manipulation
 library(ggplot2)    # For visualizations
 library(tidyr)      # For cleaning data
@@ -202,7 +202,7 @@ We want to convert the date field from <chr> to <date> so that we can do time se
 ```{r}
 head(texas_cases, 20)
 
-# update the date column to Date format 
+# update the date column to Date format! 
 texas_cases$date <- as.Date(texas_cases$date, format = "%Y-%m-%d")
 
 # verify the updated data
@@ -381,7 +381,7 @@ clean_cases_plus_final$state <- tolower(clean_cases_plus_final$state)
 head(clean_cases_plus_final, 5)
 
 # Write the updated clean_cases_plus_final to a CSV file
-write.csv(clean_cases_plus_final, "updated_clean_cases_plus_final.csv", row.names = FALSE)
+write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 
 ```
 
@@ -436,6 +436,9 @@ Outlier detection identifies extreme values in cases and deaths that could skew 
 3. Data Preparation [30]
 
 # put all counties in a table and aggregate their total cases/deaths and look at the amount of transportation in that column. More transportation means more cases? Less cases? Joining mobility data and census data (cases plus or texas cases) --- we must use US counties as the objects 
+```{R}
+
+```
 
 Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
 
