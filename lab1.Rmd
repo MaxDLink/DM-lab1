@@ -385,6 +385,7 @@ clean_cases_plus_final$state <- tolower(clean_cases_plus_final$state)
 # Verify the changes (first 5 rows)
 head(clean_cases_plus_final, 5)
 
+
 # Write the updated clean_cases_plus_final to a CSV file
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 
@@ -404,6 +405,125 @@ Median_Income --> Ensure numeric
 
 Median_Year_Structure_Built --> Ensure Numeric. Show as decades? 
 
+```{r}
+# outlier detection 
+
+
+# make a boxplot for each clean dataframe
+
+
+# clean_cases_plus_final 
+
+# Filter the dataframe to include only Texas (TX)
+tx_data = clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
+
+# Create the boxplot for Texas only
+crop = ggplot(data = tx_data, 
+              mapping = aes(x = state, y = confirmed_cases)) + 
+       geom_boxplot() +
+       labs(title = "Boxplot of Confirmed Cases in Texas",
+            x = "State",
+            y = "Confirmed Cases") +
+       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+
+
+# Display the plot
+crop
+
+
+# clean_mobility_data 
+# clean_mobility_data
+
+# clean_texas_cases 
+#clean_texas_cases
+
+```
+
+
+```{r}
+
+
+# Function to calculate mode (since R doesn't have a built-in mode function)
+get_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+
+```
+
+```{r}
+
+# median_income: 
+
+
+
+income_stats <- clean_cases_plus_final %>%
+  summarise(
+    Range = range(median_income, na.rm = TRUE)[2] - range(median_income, na.rm = TRUE)[1],
+    Mean = mean(median_income, na.rm = TRUE),
+    Median = median(median_income, na.rm = TRUE),
+    Mode = get_mode(median_income),
+    Variance = var(median_income, na.rm = TRUE),
+    Std_Dev = sd(median_income, na.rm = TRUE)
+  )
+print("Median_Income Statistics:")
+print(income_stats)
+
+
+
+
+
+```
+
+
+```{r}
+
+# name: 
+
+
+confirmed_cases_stats <- clean_cases_plus_final %>%
+  summarise(
+    Range = range(confirmed_cases, na.rm = TRUE)[2] - range(confirmed_cases, na.rm = TRUE)[1],
+    Mean = mean(confirmed_cases, na.rm = TRUE),
+    Median = median(confirmed_cases, na.rm = TRUE),
+    Mode = get_mode(confirmed_cases),
+    Variance = var(confirmed_cases, na.rm = TRUE),
+    Std_Dev = sd(confirmed_cases, na.rm = TRUE)
+  )
+print("confirmed_cases Statistics:")
+print(confirmed_cases_stats)
+
+
+
+ 
+```
+
+
+```{r}
+# Death: 
+
+
+
+
+
+
+```
+
+
+```{r}
+# Median: 
+
+
+
+```
+
+```{r}
+# Variance:
+
+
+
+```
 
 
 
@@ -431,6 +551,36 @@ Outlier detection identifies extreme values in cases and deaths that could skew 
 
 ```{r}
 # outlier detection 
+
+
+# make a boxplot for each clean dataframe
+
+
+# clean_cases_plus_final 
+
+# Filter the dataframe to include only Texas (TX)
+tx_data = clean_cases_plus_final[clean_cases_plus_final$State == "tx", ]
+
+# Create the boxplot for Texas only
+crop = ggplot(data = tx_data, 
+              mapping = aes(x = state, y = confirmed_cases)) + 
+       geom_boxplot() +
+       labs(title = "Boxplot of Confirmed Cases in Texas",
+            x = "State",
+            y = "Confirmed Cases") +
+       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+
+
+# Display the plot
+crop
+
+
+# clean_mobility_data 
+#clean_mobility_data
+
+# clean_texas_cases 
+#clean_texas_cases
+
 
 ```
 
