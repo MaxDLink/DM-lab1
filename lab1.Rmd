@@ -180,6 +180,12 @@ head(clean_mobility_data, 10)
 clean_mobility_data <- clean_mobility_data %>%
   filter(tolower(sub_region_1) == "texas")
 
+# convert date from <chr> to <date> format 
+clean_mobility_data$date <- as.Date(clean_mobility_data$date, format = "%Y-%m-%d")
+
+# updated date 
+head(clean_mobility_data, 10)
+
 # Write the filtered dataframe to clean_mobility_data.csv
 write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
@@ -440,6 +446,21 @@ crop
 ```
 
 
+
+
+
+
+
+
+
+
+
+# Statistics 
+
+Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
+
+
+
 ```{r}
 
 
@@ -474,7 +495,8 @@ print(income_stats)
 
 
 
-```
+``` 
+
 
 
 ```{r}
@@ -497,7 +519,8 @@ print(confirmed_cases_stats)
 
 
  
-```
+``` 
+
 
 
 ```{r}
@@ -518,23 +541,103 @@ print(confirmed_cases_stats)
 
 ```
 
+
 ```{r}
 # Variance:
 
 
 
-```
-
-
-
-# Statistics 
-
-Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
-
+``` 
 
 Visually explore the chosen attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
 
 
+```{r}
+# median income graph 
+
+ggplot(clean_cases_plus_final, aes(x = median_income)) +
+  geom_histogram(binwidth = 5000, fill = "blue", color = "black") +
+  labs(title = "Distribution of Median Income in Texas Counties",
+       x = "Median Income ($)", y = "Frequency") +
+  theme_minimal()
+
+```
+```{r}
+# confirmed cases
+ggplot(clean_cases_plus_final, aes(y = confirmed_cases)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Box Plot of Confirmed Cases in Texas Counties",
+       y = "Confirmed Cases") +
+  theme_minimal()
+
+
+
+
+```
+
+```{r}
+# deaths
+ggplot(clean_cases_plus_final, aes(y = deaths)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Box Plot of Deaths in Texas Counties",
+       y = "Deaths") +
+  theme_minimal()
+
+```
+
+```{r}
+# Median_age
+ggplot(clean_cases_plus_final, aes(x = median_age)) +
+  geom_histogram(binwidth = 1, fill = "purple", color = "black") +
+  labs(title = "Distribution of Median Age in Texas Counties",
+       x = "Median Age (years)", y = "Frequency") +
+  theme_minimal()
+
+
+```
+```{r}
+# confirmed cases over time 
+ggplot(texas_cases, aes(x = date, y = confirmed_cases)) +
+  geom_line(color = "red") +
+  labs(title = "Confirmed Cases Over Time in Texas",
+       x = "Date", y = "Confirmed Cases") +
+  theme_minimal()
+
+
+```
+```{r}
+# Deaths (Texas_cases.csv)
+ggplot(texas_cases, aes(x = date, y = deaths)) +
+  geom_line(color = "darkorange") +
+  labs(title = "Deaths Over Time in Texas",
+       x = "Date", y = "Deaths") +
+  theme_minimal()
+
+
+```
+
+```{r}
+
+# Retail_and_recreation_percent_change_from_baseline
+ggplot(clean_mobility_data, aes(x = date, y = retail_and_recreation_percent_change_from_baseline)) +
+  geom_line(color = "orange") +
+  labs(title = "Retail and Recreation Mobility Change Over Time in Texas",
+       x = "Date", y = "Percent Change from Baseline") +
+  theme_minimal()
+
+```
+
+```{r}
+# residential = at home 
+# Residential_percent_change_from_baseline
+ggplot(clean_mobility_data, aes(x = date, y = residential_percent_change_from_baseline)) +
+  geom_line(color = "lightblue") +
+  labs(title = "Residential Mobility Change Over Time in Texas",
+       x = "Date", y = "Percent Change from Baseline") +
+  theme_minimal()
+
+
+```
 Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
 
 
