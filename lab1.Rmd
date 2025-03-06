@@ -640,6 +640,42 @@ ggplot(clean_mobility_data, aes(x = date, y = residential_percent_change_from_ba
 ```
 Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
 
+```{r}
+# Assuming your datasets are already loaded as data frames
+# For example:
+# texas_case <- read.csv("path_to_texas_case.csv")
+# clean_mobility_data <- read.csv("path_to_clean_mobility_data.csv")
+
+
+# sub_region_2 to lower in clean_mobility_data 
+
+clean_mobility_data$sub_region_2 <- tolower(clean_mobility_data$sub_region_2)
+
+
+# Merge the datasets
+merged_data <- texas_cases %>%
+  left_join(
+    select(clean_mobility_data, sub_region_2, date, retail_and_recreation_percent_change_from_baseline, residential_percent_change_from_baseline),
+    by = c("county_name" = "sub_region_2", "date" = "date")
+  )
+
+# Now merged_data contains all columns from texas_case plus retail_and_recreation_percent_change
+
+
+merged_data <- merged_data[complete.cases(merged_data), ]
+
+merged_data
+
+merged_data <- subset(merged_data, select = -c(state_fips_code, state, county_fips_code))
+
+merged_data
+
+```
+
+Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....  
+
+
+
 
 ## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers  
 
