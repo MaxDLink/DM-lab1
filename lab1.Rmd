@@ -5,8 +5,6 @@ Date: 2025-02-21
 Description: In this project, we will focus on cleaning and understanding the data. We will follow the Crisp-DM framework 
 ---
 
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -16,8 +14,6 @@ library(dplyr)      # For data manipulation
 library(ggplot2)    # For visualizations
 library(tidyr)      # For cleaning data
 ```
-
-
 
 ```{r dataframe}
 # reading in Mobility Report
@@ -36,100 +32,95 @@ head(cases_plus, 20)
 
 Crisp-DM Framework:
 
-1. Problem Description (Business Understanding) [10]
-Describe the Problem: What is COVID-19, and what is social distancing and flattening the
-curve? Why is it important to look at data about the virus spread, hospitalizations, and
-available resources? [3 points]
+1.  Problem Description (Business Understanding) [10] Describe the Problem: What is COVID-19, and what is social distancing and flattening the curve? Why is it important to look at data about the virus spread, hospitalizations, and available resources? [3 points]
 
-COVID-19 is a highly contagious respiratory illness caused by the SARS-CoV-2 virus, first identified in late 2019. Social distancing involves reducing physical interactions to slow the virus’s spread, aiming to "flatten the curve"—i.e., reduce the peak number of cases to avoid overwhelming healthcare systems. Analyzing data on virus spread, hospitalizations, and resources is critical to understand transmission patterns, predict healthcare demands, and develop effective interventions (e.g., vaccines or supplies by Johnson & Johnson). 
+COVID-19 is a highly contagious respiratory illness caused by the SARS-CoV-2 virus, first identified in late 2019. Social distancing involves reducing physical interactions to slow the virus’s spread, aiming to "flatten the curve"—i.e., reduce the peak number of cases to avoid overwhelming healthcare systems. Analyzing data on virus spread, hospitalizations, and resources is critical to understand transmission patterns, predict healthcare demands, and develop effective interventions (e.g., vaccines or supplies by Johnson & Johnson).
 
-Choose a stakeholder for whom you analyze and, later on, model the data. Define some
-questions that are important for this stakeholder. What decisions can your stakeholders make, and how would they affect COVID-19 outcomes? Brainstorm this a lot since this choice will guide your exploration of this and all the following projects. Make sure you can produce actionable recommendations for these questions using your data later in your report. [7 point]
+Choose a stakeholder for whom you analyze and, later on, model the data. Define some questions that are important for this stakeholder. What decisions can your stakeholders make, and how would they affect COVID-19 outcomes? Brainstorm this a lot since this choice will guide your exploration of this and all the following projects. Make sure you can produce actionable recommendations for these questions using your data later in your report. [7 point]
 
 Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical devices, and consumer health products.
 
 Questions for J&J:
 
-# TODO - -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116 
-1. How does population density affect COVID-19 transmission rates across U.S. counties?
+# TODO - -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116
 
-2. What is the relationship between social distancing compliance (mobility changes) and case growth?
+1.  How does population density affect COVID-19 transmission rates across U.S. counties?
 
-3. How do hospital resources (e.g., beds per capita) correlate with mortality rates?
+2.  What is the relationship between social distancing compliance (mobility changes) and case growth?
 
-4. Which counties showed delayed social distancing responses, and how did this impact case surges?
+3.  How do hospital resources (e.g., beds per capita) correlate with mortality rates?
 
-5. What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
+4.  Which counties showed delayed social distancing responses, and how did this impact case surges?
+
+5.  What demographic or geographic factors predict higher demand for medical supplies or vaccines?
 
 Johnson and Johnson can make the following decisions:
 
-- Prioritize vaccine or medical supply distribution to high-risk, densely populated areas.
+-   Prioritize vaccine or medical supply distribution to high-risk, densely populated areas.
 
-- Partner with counties lacking resources to provide equipment or therapeutics.
+-   Partner with counties lacking resources to provide equipment or therapeutics.
 
-- Adjust production timelines based on predicted surges linked to mobility patterns.
+-   Adjust production timelines based on predicted surges linked to mobility patterns.
 
+2.  Data Understanding [45]
 
- 2. Data Understanding [45]
- 
 # Must include all three provided datasets in your analysis!
 
 Describe what data is available. Choose 5-10 important variables for the questions you have identified in the section above. Describe the type of data (scale, values, etc.) of the most critical variables in the data. [9 point]
 
-Data Available: 
+Data Available:
 
-1. Global_Mobility_Report.csv: [insert info]  
+1.  Global_Mobility_Report.csv: [insert info]
 
-2. COVID-19 Case Data (hypothetical):  [insert info]  
+2.  COVID-19 Case Data (hypothetical): [insert info]
 
-3. County Resources Data (hypothetical): [insert info]  
+3.  County Resources Data (hypothetical): [insert info]
 
-# Questions to answer: -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116 
+# Questions to answer: -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116
 
-1. How does population density affect COVID-19 transmission rates across U.S. counties?
+1.  How does population density affect COVID-19 transmission rates across U.S. counties?
 
-2. What is the relationship between social distancing compliance (mobility changes) and case growth?
+2.  What is the relationship between social distancing compliance (mobility changes) and case growth?
 
-3. How do hospital resources (e.g., beds per capita) correlate with mortality rates?
+3.  How do hospital resources (e.g., beds per capita) correlate with mortality rates?
 
-4. Which counties showed delayed social distancing responses, and how did this impact case surges?
+4.  Which counties showed delayed social distancing responses, and how did this impact case surges?
 
-5. What demographic or geographic factors predict higher demand for medical supplies or vaccines? 
+5.  What demographic or geographic factors predict higher demand for medical supplies or vaccines?
 
+# 10 important variables (critical \*):
 
-# 10 important variables (critical *): 
+1.  Median_Income (cases_plus.csv): Explore how income levels correlate with Covid-19 cases or deaths, addressing "How does income affect covid status?"
 
-1. Median_Income (cases_plus.csv): Explore how income levels correlate with Covid-19 cases or deaths, addressing "How does income affect covid status?" 
+2.  Race_Population (cases_plus.csv): Does race affect covid status? Are there racial disparities in the data?
 
-2. Race_Population (cases_plus.csv): Does race affect covid status? Are there racial disparities in the data? 
+3.  County_Name (texas_cases.csv) or County, State (cases_plus.csv): Compare urban vs rural counties & their impact on covid-19 status. City vs country
 
-3. County_Name (texas_cases.csv) or County, State (cases_plus.csv): Compare urban vs rural counties & their impact on covid-19 status. City vs country 
+4.  Public_Transportation_Users (cases_plus.csv): Does higher public transit use correlates with higher case rates?
 
-4. Public_Transportation_Users (cases_plus.csv): Does higher public transit use correlates with higher case rates? 
+5.  Parents_in_labor_force (cases_plus.csv): Does parental labor force participation influences transmission rates?
 
-5. Parents_in_labor_force (cases_plus.csv): Does parental labor force participation influences transmission rates? 
+-   
 
-* 6. confirmed_cases (texas_cases.csv or cases_plus.csv): Primary outcome variable to measure infection rates across other ?s  
+    6.  confirmed_cases (texas_cases.csv or cases_plus.csv): Primary outcome variable to measure infection rates across other ?s
 
-* 7.Deaths (texas_cases.csv or cases_plus.csv): Critical variable to assess mortality/severity of Covid-19  
+-   7.Deaths (texas_cases.csv or cases_plus.csv): Critical variable to assess mortality/severity of Covid-19
 
-8. Rent (cases_plus.csv): proxy for housing cost & potential overcrowding, which could affect transmission risk 
+8.  Rent (cases_plus.csv): proxy for housing cost & potential overcrowding, which could affect transmission risk
 
-9. Year_House_Built (cases_plus.csv): The house age could cause poor ventilation which may affect transmission risk? 
+9.  Year_House_Built (cases_plus.csv): The house age could cause poor ventilation which may affect transmission risk?
 
-10. Transit_stations_percent_change_from_baseline (mobility_data.csv, if us data included): Links mobility changes at transit hubs to public transportation use & case rates, if geographically compatible with U.S. counties 
+10. Transit_stations_percent_change_from_baseline (mobility_data.csv, if us data included): Links mobility changes at transit hubs to public transportation use & case rates, if geographically compatible with U.S. counties
 
-# Description of critical variables: 
+# Description of critical variables:
 
-The confirmed_cases and Deaths are critical values because they let us answer our other questions about spread and intensity 
-
+The confirmed_cases and Deaths are critical values because they let us answer our other questions about spread and intensity
 
 Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
 
+# 1. Check for missing values in mobility_data
 
-# 1. Check for missing values in mobility_data 
-
-we can use colSums function to count the missing values in each column of the data 
+we can use colSums function to count the missing values in each column of the data
 
 ```{r}
 missing_mobility <- colSums(is.na(mobility_data) | mobility_data == "")
@@ -137,7 +128,7 @@ print("Missing values in mobility_data:")
 print(missing_mobility) 
 ```
 
-We have quite a few missing values in the mobility data, so lets get rid of the rows that contain the missing values. To do this, we can use the na.omit function and then verify by comparing the original mobility data with a cleaned mobility data. 
+We have quite a few missing values in the mobility data, so lets get rid of the rows that contain the missing values. To do this, we can use the na.omit function and then verify by comparing the original mobility data with a cleaned mobility data.
 
 ```{r}
 # remove rows that have missing data 
@@ -162,11 +153,12 @@ head(clean_mobility_data)
 write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 ```
-# Does clean_mobility_data have any other values that need to be changed? 
+
+# Does clean_mobility_data have any other values that need to be changed?
 
 The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
 
-The census_fips_code should be changed to always have five digits. We can fix this with zeros. 
+The census_fips_code should be changed to always have five digits. We can fix this with zeros.
 
 ```{r}
 
@@ -193,7 +185,6 @@ write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 ```
 
-
 # 2. Check for missing values in texas_cases
 
 ```{r}
@@ -205,10 +196,9 @@ head(texas_cases)
 
 ```
 
+# Does clean_texas_cases.csv have any other values that need to be changed?
 
-# Does clean_texas_cases.csv have any other values that need to be changed? 
-
-We want to convert the date field from <chr> to <date> so that we can do time series analysis, weekly totals, or rolling averages for the date. This would also allow us to merge into a new dataset later. 
+We want to convert the date field from <chr> to <date> so that we can do time series analysis, weekly totals, or rolling averages for the date. This would also allow us to merge into a new dataset later.
 
 ```{r}
 head(texas_cases, 20)
@@ -227,7 +217,7 @@ write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
 
 ```
 
-Next, we can take county_name and state, and standardize them. We want to ensure they are consistent for merging with the county fields in the other .csv's later on. 
+Next, we can take county_name and state, and standardize them. We want to ensure they are consistent for merging with the county fields in the other .csv's later on.
 
 ```{r}
 # county_name, state --> standardize & ensure consistency for merging with other .csvs
@@ -238,12 +228,11 @@ texas_cases$state <- tolower(texas_cases$state)
 
 head(texas_cases, 5)
 
-``` 
+```
 
+county_fips_code --\> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data. Coordinate with state pip in clean_cases_plus_final.csv to match all texas with their texas pips
 
-county_fips_code --> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data. Coordinate with state pip in clean_cases_plus_final.csv to match all texas with their texas pips 
-
-state_fips_Code --> standardize & ensure consistency for merging with other .csvs 
+state_fips_Code --\> standardize & ensure consistency for merging with other .csvs
 
 ```{r}
 # make county_fips_code five digits 
@@ -259,12 +248,12 @@ write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
 
 
 ```
+
 state should be kept for merging with clean_mobility_data.csv
 
-we can aggregate the cases & deaths, standardize them and make them rates, and do outlier detection. 
+we can aggregate the cases & deaths, standardize them and make them rates, and do outlier detection.
 
-
-We can aggregate by the county_name 
+We can aggregate by the county_name
 
 ```{r}
 # Aggregate confirmed_cases and deaths by county_name, including "statewide unallocated"
@@ -280,9 +269,9 @@ head(texas_cases_aggregated, 5)
 
 ```
 
-To change the data into rates and look for outliers, we need to do data cleaning in cases_plus because we need its population information. 
+To change the data into rates and look for outliers, we need to do data cleaning in cases_plus because we need its population information.
 
-# 3. Check for missing values in cases_plus 
+# 3. Check for missing values in cases_plus
 
 ```{r}
 missing_cases_plus <- colSums(is.na(cases_plus))
@@ -290,8 +279,7 @@ print("Missing values in cases_plus:")
 print(missing_cases_plus)
 ```
 
-We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent. 
-
+We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent.
 
 ```{r}
 
@@ -321,7 +309,7 @@ print(paste("Number of columns after removing empty columns:", ncol(cases_plus_c
 
 ```
 
-Finish cleaning by removing any missing values in other columns like median_rent 
+Finish cleaning by removing any missing values in other columns like median_rent
 
 ```{r}
 # --------- 
@@ -346,9 +334,9 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 
 ```
 
-# Does cases_plus have any other values that need to be changed? 
+# Does cases_plus have any other values that need to be changed?
 
-We can convert the date from <chr> to <date> format for time series analysis. 
+We can convert the date from <chr> to <date> format for time series analysis.
 
 ```{r}
 head(clean_cases_plus_final, 10)
@@ -365,9 +353,9 @@ head(clean_cases_plus_final, 20)
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 
 
-``` 
+```
 
-Looking at the geographic identifiers: 
+Looking at the geographic identifiers:
 
 The state_fips_code and county_fips_code may be standardized. The state_fips_code must have always have two digits and the county_fips_code must always have five digits. We can fix this with zeros.
 
@@ -381,7 +369,7 @@ head(clean_cases_plus_final, 20)
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 ```
 
-We can make the county_name and state columns lowercase 
+We can make the county_name and state columns lowercase
 
 ```{r}
 # Convert county_name and state to lowercase
@@ -397,19 +385,19 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 
 ```
 
-cases & deaths --> aggregation? Standardization/rates, outlier detection 
+cases & deaths --\> aggregation? Standardization/rates, outlier detection
 
-Public_transport_users --> convert to rates 
+Public_transport_users --\> convert to rates
 
-parents_in_labor_force --> proportion (with family_households or total_pop if it is a count) 
+parents_in_labor_force --\> proportion (with family_households or total_pop if it is a count)
 
-Rent --> Ensure numeric? Standardize? 
+Rent --\> Ensure numeric? Standardize?
 
-Race_population --> Can we split this? Ensure numeric. Can we make proportions? 
+Race_population --\> Can we split this? Ensure numeric. Can we make proportions?
 
-Median_Income --> Ensure numeric
+Median_Income --\> Ensure numeric
 
-Median_Year_Structure_Built --> Ensure Numeric. Show as decades? 
+Median_Year_Structure_Built --\> Ensure Numeric. Show as decades?
 
 ```{r}
 # outlier detection 
@@ -445,21 +433,9 @@ crop
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-# Statistics 
+# Statistics
 
 Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
-
-
 
 ```{r}
 
@@ -495,9 +471,7 @@ print(income_stats)
 
 
 
-``` 
-
-
+```
 
 ```{r}
 
@@ -519,9 +493,7 @@ print(confirmed_cases_stats)
 
 
  
-``` 
-
-
+```
 
 ```{r}
 # Death: 
@@ -533,7 +505,6 @@ print(confirmed_cases_stats)
 
 ```
 
-
 ```{r}
 # Median: 
 
@@ -541,16 +512,14 @@ print(confirmed_cases_stats)
 
 ```
 
-
 ```{r}
 # Variance:
 
 
 
-``` 
+```
 
 Visually explore the chosen attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
-
 
 ```{r}
 # median income graph 
@@ -562,6 +531,7 @@ ggplot(clean_cases_plus_final, aes(x = median_income)) +
   theme_minimal()
 
 ```
+
 ```{r}
 # confirmed cases
 ggplot(clean_cases_plus_final, aes(y = confirmed_cases)) +
@@ -595,6 +565,7 @@ ggplot(clean_cases_plus_final, aes(x = median_age)) +
 
 
 ```
+
 ```{r}
 # confirmed cases over time 
 ggplot(texas_cases, aes(x = date, y = confirmed_cases)) +
@@ -605,6 +576,7 @@ ggplot(texas_cases, aes(x = date, y = confirmed_cases)) +
 
 
 ```
+
 ```{r}
 # Deaths (Texas_cases.csv)
 ggplot(texas_cases, aes(x = date, y = deaths)) +
@@ -638,6 +610,7 @@ ggplot(clean_mobility_data, aes(x = date, y = residential_percent_change_from_ba
 
 
 ```
+
 Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
 
 ```{r}
@@ -672,21 +645,18 @@ merged_data
 
 ```
 
-Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....  
+Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....
 
+## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers
 
-
-
-## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers  
-
-We can make the data in texas_cases rates to make it comparable across regions. This is important because counties have different population densities, so in order to make the counties comparable we should adjust for different population sizes. This will avoid raw counts, so our data will be more accurate.We will use the population from clean_cases_plus_final.csv so that we can change the data to rates. 
+We can make the data in texas_cases rates to make it comparable across regions. This is important because counties have different population densities, so in order to make the counties comparable we should adjust for different population sizes. This will avoid raw counts, so our data will be more accurate.We will use the population from clean_cases_plus_final.csv so that we can change the data to rates.
 
 ```{r}
 # use clean_cases_plus_final.csv population 
 
 ```
 
-Outlier detection identifies extreme values in cases and deaths that could skew the analysis. Large counties could have extremely high death rates, which would change averages. Outlier could be real cases, or they could be errors in data. We must judge whether to keep them or not. 
+Outlier detection identifies extreme values in cases and deaths that could skew the analysis. Large counties could have extremely high death rates, which would change averages. Outlier could be real cases, or they could be errors in data. We must judge whether to keep them or not.
 
 ```{r}
 # outlier detection 
@@ -723,35 +693,43 @@ crop
 
 ```
 
-# Possible correlation analysis with other two .csv's? cor() function   
+# Possible correlation analysis with other two .csv's? cor() function
 
+3.  Data Preparation [30]
 
+# put all counties in a table and aggregate their total cases/deaths and look at the amount of transportation in that column. More transportation means more cases? Less cases? Joining mobility data and census data (cases plus or texas cases) --- we must use US counties as the objects
 
-3. Data Preparation [30]
-
-# put all counties in a table and aggregate their total cases/deaths and look at the amount of transportation in that column. More transportation means more cases? Less cases? Joining mobility data and census data (cases plus or texas cases) --- we must use US counties as the objects 
 ```{R}
 
 ```
 
 Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
 
+How (densely) populated is the county? TOTOAL POP. What resources does a county have (money, hospital)? MEDIAN_INCOME What is the social distancing response, and how long did it take after the first case? You can come up with more critical questions for your chosen stakeholder.
 
-When was the first case reported?
-How (densely) populated is the county?
-What resources does a county have (money, hospital)?
-What is the social distancing response, and how long did it take after the first case?
-You can come up with more critical questions for your chosen stakeholder.
+```{R}
+
+# filters for only tx 
+tx_data = clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
+
+# add more columns if needed for analysis 
+tx_data <- subset(tx_data, select = c(county_name, confirmed_cases, deaths, median_age, median_income, total_pop))
+
+
+
+head(tx_data, 10)
+
+
+```
 
 # [dataset]
 
-
-4. Data Preparation [15]
+4.  Data Preparation [15]
 
 Formulate some recommendations for the questions developed in section 1. based on the results in 2. and 3. Make sure your recommendations are based on data and are actionable for the stakeholder (i.e., the stakeholder has the power to execute the recommendations). [15 points]
 
-# recs for questions in section 1 
+# recs for questions in section 1
 
 [recs based on results in 2 and 3, based on data & actionable for J&J]
 
-Does masking help reduce the number of cases and deaths? Does staying home affect the number of cases and deaths? Vaccinations? House age? 
+Does masking help reduce the number of cases and deaths? Does staying home affect the number of cases and deaths? Vaccinations? House age?
