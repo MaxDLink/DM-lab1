@@ -1,8 +1,9 @@
 ---
 Title: Data Mining Lab 1
 Authors: Max Link, Logan Lu, Jadon Klipsch
-Date: 2025-02-21
-Description: In this project, we will focus on cleaning and understanding the data. We will follow the Crisp-DM framework 
+Date: "2025-02-21"
+Description: "In this project, we will focus on cleaning and understanding the data.
+  We will follow the Crisp-DM framework"
 ---
 
 ```{r setup, include=FALSE}
@@ -475,7 +476,7 @@ print(income_stats)
 
 ```{r}
 
-# name: 
+# confirmed cases: 
 
 
 confirmed_cases_stats <- clean_cases_plus_final %>%
@@ -498,7 +499,17 @@ print(confirmed_cases_stats)
 ```{r}
 # Death: 
 
-
+death_stats <- clean_cases_plus_final %>%
+  summarise(
+    Range = range(deaths, na.rm = TRUE)[2] - range(deaths, na.rm = TRUE)[1],
+    Mean = mean(deaths, na.rm = TRUE),
+    Median = median(deaths, na.rm = TRUE),
+    Mode = get_mode(deaths),
+    Variance = var(deaths, na.rm = TRUE),
+    Std_Dev = sd(deaths, na.rm = TRUE)
+  )
+print("death Statistics:")
+print(death_stats)
 
 
 
@@ -506,15 +517,92 @@ print(confirmed_cases_stats)
 ```
 
 ```{r}
-# Median: 
+# median_age: 
+
+median_age_stats <- clean_cases_plus_final %>%
+  summarise(
+    Range = range(median_age, na.rm = TRUE)[2] - range(median_age, na.rm = TRUE)[1],
+    Mean = mean(median_age, na.rm = TRUE),
+    Median = median(median_age, na.rm = TRUE),
+    Mode = get_mode(median_age),
+    Variance = var(median_age, na.rm = TRUE),
+    Std_Dev = sd(median_age, na.rm = TRUE)
+  )
+print("median_age Statistics:")
+print(median_age_stats)
 
 
 
 ```
 
 ```{r}
-# Variance:
 
+
+# confirmed cases texas_cases 
+
+confirmed_cases <- texas_cases %>%
+  summarise(
+    Range = range(confirmed_cases, na.rm = TRUE)[2] - range(confirmed_cases, na.rm = TRUE)[1],
+    Mean = mean(confirmed_cases, na.rm = TRUE),
+    Median = median(confirmed_cases, na.rm = TRUE),
+    Mode = get_mode(confirmed_cases),
+    Variance = var(confirmed_cases, na.rm = TRUE),
+    Std_Dev = sd(confirmed_cases, na.rm = TRUE)
+  )
+print("confirmed_cases Statistics:")
+print(confirmed_cases)
+
+
+
+```
+
+```{r}
+# deaths texas_cases 
+
+deaths <- texas_cases %>%
+  summarise(
+    Range = range(deaths, na.rm = TRUE)[2] - range(deaths, na.rm = TRUE)[1],
+    Mean = mean(deaths, na.rm = TRUE),
+    Median = median(deaths, na.rm = TRUE),
+    Mode = get_mode(deaths),
+    Variance = var(deaths, na.rm = TRUE),
+    Std_Dev = sd(deaths, na.rm = TRUE)
+  )
+print("deaths Statistics:")
+print(deaths)
+
+```
+```{r}
+# Retail_and_recreation_percent_change_From_baseline mobility data 
+
+retail_and_recreation <- clean_mobility_data %>%
+  summarise(
+    Range = range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[2] - range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[1],
+    Mean = mean(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Median = median(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Mode = get_mode(retail_and_recreation_percent_change_from_baseline),
+    Variance = var(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Std_Dev = sd(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)
+  )
+print("retail_and_recreation Statistics:")
+print(retail_and_recreation)
+
+```
+
+```{r}
+# Residential_Percent_Change_From_Baseline  mobility data 
+
+Residentia <- clean_mobility_data %>%
+  summarise(
+    Range = range(residential_percent_change_from_baseline, na.rm = TRUE)[2] - range(residential_percent_change_from_baseline, na.rm = TRUE)[1],
+    Mean = mean(residential_percent_change_from_baseline, na.rm = TRUE),
+    Median = median(residential_percent_change_from_baseline, na.rm = TRUE),
+    Mode = get_mode(residential_percent_change_from_baseline),
+    Variance = var(residential_percent_change_from_baseline, na.rm = TRUE),
+    Std_Dev = sd(residential_percent_change_from_baseline, na.rm = TRUE)
+  )
+print("residential Statistics:")
+print(Residentia)
 
 
 ```
@@ -719,6 +807,158 @@ tx_data <- subset(tx_data, select = c(county_name, confirmed_cases, deaths, medi
 
 head(tx_data, 10)
 
+
+```
+```{r}
+# scatter plot with trend line 
+# median age and cases per 100k 
+
+
+# Load libraries
+library(dplyr)
+library(ggplot2)
+
+# Prepare tx_data_agg (same as before)
+tx_data_agg <- clean_cases_plus_final %>%
+  filter(state == "tx") %>%
+  group_by(county_name) %>%
+  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            median_age = first(median_age),
+            median_income = first(median_income),
+            total_pop = first(total_pop)) %>%
+  ungroup() %>%
+  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
+
+# Create scatterplot with trend line
+ggplot(tx_data_agg, aes(x = median_age, y = cases_per_100k)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Cases per 100k vs. Median Age in Texas Counties",
+       x = "Median Age", y = "Cases per 100,000") +
+  theme_minimal()
+
+```
+Counties with lower median ages have lower case rates. Older people do not go out as much as younger people. 
+
+
+```{r}
+# Load libraries
+library(dplyr)
+library(ggplot2)
+
+# Prepare tx_data_agg
+tx_data_agg <- clean_cases_plus_final %>%
+  filter(state == "tx") %>%
+  group_by(county_name) %>%
+  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            total_pop = first(total_pop)) %>%
+  ungroup() %>%
+  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
+
+# Create histogram
+ggplot(tx_data_agg, aes(x = cases_per_100k)) +
+  geom_histogram(binwidth = 500, fill = "lightblue", color = "black") +
+  labs(title = "Distribution of Cases per 100k in Texas Counties",
+       x = "Cases per 100,000", y = "Number of Counties") +
+  theme_minimal()
+```
+
+cases_per_100k = the number of confirmed COVID-19 cases per 100,000 people in each Texas county
+
+number of counties that fall into each bin on the x axis 
+
+This shows the distribution of case rates among counties. For example, 5 counties have about 5,000 cases per 100,000 people
+
+we can also make a scatterplot to label the counties
+
+```{r}
+# Load libraries
+library(dplyr)
+library(ggplot2)
+library(ggrepel)  # For better label placement
+
+# Prepare tx_data_agg
+tx_data_agg <- clean_cases_plus_final %>%
+  filter(state == "tx") %>%
+  group_by(county_name) %>%
+  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            total_pop = first(total_pop)) %>%
+  ungroup() %>%
+  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
+
+# Add a row index for plotting
+tx_data_agg <- tx_data_agg %>%
+  mutate(index = row_number())
+
+# Calculate the 95th percentile threshold
+threshold <- quantile(tx_data_agg$cases_per_100k, 0.95, na.rm = TRUE)
+
+# Verify the number of counties in the top 5%
+top_counties <- subset(tx_data_agg, cases_per_100k >= threshold)
+print(paste("Number of counties in top 5%:", nrow(top_counties)))
+print(top_counties)
+
+# Create scatterplot and label top 5% counties
+ggplot(tx_data_agg, aes(x = index, y = cases_per_100k)) +
+  geom_point(data = subset(tx_data_agg, cases_per_100k < threshold), color = "black") +
+  geom_point(data = top_counties, color = "red") +
+  geom_text_repel(data = top_counties, aes(label = county_name), size = 3, max.overlaps = 20) +
+  labs(title = "Cases per 100k in Texas Counties with Top 5% Highlighted",
+       x = "County Index", y = "Cases per 100,000") +
+  theme_minimal() +
+  ylim(0, max(tx_data_agg$cases_per_100k, na.rm = TRUE) * 1.1)
+
+
+
+```
+The scatterplot visualizes the cases_per_100k (cases per 100,000 people) for Texas counties, with labels for the top 5% of counties by cases_per_100k.
+
+we can verify that there are about 10 counties labeled to match our threshold. These 10 counties will be our outliers. 
+
+
+```{r}
+
+# Load library
+library(dplyr)
+
+# Filter and aggregate tx_data in one step
+tx_data_agg <- clean_cases_plus_final %>%
+  filter(state == "tx") %>%
+  group_by(county_name) %>%
+  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            deaths = sum(deaths, na.rm = TRUE),
+            median_age = first(median_age),
+            median_income = first(median_income),
+            total_pop = first(total_pop)) %>%
+  ungroup()
+
+# Fit and summarize linear regression model
+model <- lm(confirmed_cases ~ median_age + median_income + total_pop, data = tx_data_agg)
+summary(model)
+
+
+```
+
+There could be multiple issues with this model like outliers and skewed results from raw counts etc. so lets make another regression model and fix some of these issues 
+
+```{r}
+# Load library
+library(dplyr)
+
+# Filter, aggregate, and model in one pipeline with normalization
+model <- clean_cases_plus_final %>%
+  filter(state == "tx") %>%
+  group_by(county_name) %>%
+  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
+            median_age = first(median_age),
+            median_income = first(median_income),
+            total_pop = first(total_pop)) %>%
+  ungroup() %>%
+  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000) %>%  # Normalize
+  lm(cases_per_100k ~ median_age + median_income + total_pop, data = .)
+
+# Summarize the model
+summary(model)
 
 ```
 
