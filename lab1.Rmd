@@ -732,6 +732,9 @@ merged_data <- subset(merged_data, select = -c(state_fips_code, state, county_fi
 # merged_data 10 items 
 head(merged_data, 10) 
 
+write.csv(merged_data, "merged_data.csv", row.names = FALSE)
+
+
 ```
 
 ```{r}
@@ -870,6 +873,7 @@ cor(cases_plus$confirmed_cases, cases_plus$deaths, use = "complete.obs")
 
 Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....
 
+
 ## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers
 
 We can make the data in texas_cases rates to make it comparable across regions. This is important because counties have different population densities, so in order to make the counties comparable we should adjust for different population sizes. This will avoid raw counts, so our data will be more accurate.We will use the population from clean_cases_plus_final.csv so that we can change the data to rates.
@@ -944,6 +948,8 @@ head(tx_data, 10)
 
 
 ```
+
+
 ```{r}
 # scatter plot with trend line 
 # median age and cases per 100k 
