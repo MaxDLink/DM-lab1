@@ -729,9 +729,144 @@ merged_data
 
 merged_data <- subset(merged_data, select = -c(state_fips_code, state, county_fips_code))
 
-merged_data
+# merged_data 10 items 
+head(merged_data, 10) 
 
 ```
+
+```{r}
+# graphs for merged_data 
+
+cor_matrix <- cor(merged_data[, c("confirmed_cases", "deaths", 
+                                  "retail_and_recreation_percent_change_from_baseline", 
+                                  "residential_percent_change_from_baseline")],
+                  use = "complete.obs", method = "pearson")
+print(cor_matrix)
+
+library(ggplot2)
+
+ggplot(merged_data, aes(x = retail_and_recreation_percent_change_from_baseline, y = confirmed_cases)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Confirmed Cases vs. Retail & Recreation Mobility Change",
+       x = "Retail & Recreation Mobility Change (%)", 
+       y = "Confirmed Cases") +
+  theme_minimal()
+
+library(dplyr)
+
+merged_data <- merged_data %>% 
+  mutate(retail_mobility_group = ifelse(retail_and_recreation_percent_change_from_baseline < -25, 
+                                          "high_reduction", "low_reduction"))
+
+
+ggplot(merged_data, aes(x = retail_mobility_group, y = confirmed_cases)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Confirmed Cases by Retail Mobility Group",
+       x = "Retail Mobility Group", 
+       y = "Confirmed Cases") +
+  theme_minimal()
+
+library(ggplot2)
+library(scales)
+
+ggplot(merged_data, aes(x = date)) +
+  geom_line(aes(y = confirmed_cases), color = "red") +
+  geom_line(aes(y = retail_and_recreation_percent_change_from_baseline), color = "blue") +
+  scale_y_continuous(name = "Confirmed Cases",
+                     sec.axis = sec_axis(~., name = "Retail & Recreation % Change")) +
+  labs(title = "Confirmed Cases and Retail & Recreation Mobility Over Time",
+       x = "Date") +
+  theme_minimal()
+
+library(ggplot2)
+
+ggplot(merged_data, aes(x = confirmed_cases, y = deaths)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "green") +
+  labs(title = "Confirmed Cases vs. Deaths",
+       x = "Confirmed Cases",
+       y = "Deaths") +
+  theme_minimal()
+
+# Calculate correlation
+cor(merged_data$confirmed_cases, merged_data$deaths, use = "complete.obs")
+
+library(ggplot2)
+library(scales)
+
+ggplot(merged_data, aes(x = date)) +
+  geom_line(aes(y = confirmed_cases), color = "red") +
+  geom_line(aes(y = retail_and_recreation_percent_change_from_baseline), color = "blue") +
+  scale_y_continuous(name = "Confirmed Cases",
+                     sec.axis = sec_axis(~., name = "Retail & Recreation % Change")) +
+  labs(title = "Confirmed Cases and Retail & Recreation Mobility Over Time",
+       x = "Date") +
+  theme_minimal()
+
+ccf(merged_data$confirmed_cases, 
+    merged_data$residential_percent_change_from_baseline, 
+    lag.max = 30, 
+    na.action = na.pass)
+
+
+library(dplyr)
+
+# Categorize retail mobility changes into groups based on a threshold (e.g., -25%)
+merged_data <- merged_data %>%
+  mutate(retail_mobility_group = ifelse(retail_and_recreation_percent_change_from_baseline < -25,
+                                          "high_reduction", "low_reduction"))
+
+# Box plot
+ggplot(merged_data, aes(x = retail_mobility_group, y = confirmed_cases)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Confirmed Cases by Retail Mobility Group",
+       x = "Retail Mobility Group",
+       y = "Confirmed Cases") +
+  theme_minimal()
+
+# Group-wise averages
+group_averages <- merged_data %>%
+  group_by(retail_mobility_group) %>%
+  summarise(avg_cases = mean(confirmed_cases, na.rm = TRUE),
+            avg_deaths = mean(deaths, na.rm = TRUE))
+print(group_averages)
+
+model <- lm(confirmed_cases ~ retail_and_recreation_percent_change_from_baseline + residential_percent_change_from_baseline, 
+            data = merged_data)
+summary(model)
+
+library(ggplot2)
+ggplot(cases_plus, aes(x = median_income, y = deaths)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Median Income vs. Confirmed Cases",
+       x = "Median Income ($)", y = "Confirmed Cases") +
+  theme_minimal()
+cor(cases_plus$median_income, cases_plus$confirmed_cases, use = "complete.obs")
+
+ggplot(cases_plus, aes(x = median_age, y = deaths)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(title = "Median Age vs. Deaths",
+       x = "Median Age (years)", y = "Deaths") +
+  theme_minimal()
+cor(cases_plus$median_age, cases_plus$deaths, use = "complete.obs")
+
+ggplot(cases_plus, aes(x = confirmed_cases, y = deaths)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "green") +
+  labs(title = "Confirmed Cases vs. Deaths",
+       x = "Confirmed Cases", y = "Deaths") +
+  theme_minimal()
+cor(cases_plus$confirmed_cases, cases_plus$deaths, use = "complete.obs")
+
+
+
+``` 
+
+
+
 
 Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....
 
