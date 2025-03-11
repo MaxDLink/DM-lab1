@@ -166,6 +166,7 @@ The census_fips_code should be changed to always have five digits. We can fix th
 
 clean_mobility_data$census_fips_code <- sprintf("%05d", as.numeric(clean_mobility_data$census_fips_code))
 
+unfiltered_clean_mobility <- clean_mobility_data
 
 head(clean_mobility_data, 10)
 
@@ -186,6 +187,271 @@ write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
 
 ```
 
+```{r}
+
+# Excluded holiday dates that would have misrepresented covid effects
+excluded_dates <- as.Date(c("2020-12-25	", "2020-11-26", "2020-04-12", "2021-01-01"))  
+
+# Grocery value change over time 
+cmd <- mobility_data |>
+  filter(!is.na(retail_and_recreation_percent_change_from_baseline)) |>
+  filter(country_region == "United States") |> 
+  filter(sub_region_2 != "") |> 
+  filter(sub_region_1 != "") |> 
+  select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> 
+  mutate(date = as.Date(date)) |> 
+  filter(!date %in% excluded_dates)
+   
+  
+
+
+
+
+
+
+
+
+df_ordered <- cmd %>%
+  group_by(sub_region_1) %>%
+  mutate(median_value = median(retail_and_recreation_percent_change_from_baseline),
+    min_value = min(retail_and_recreation_percent_change_from_baseline),  # Minimum value for each state
+    max_value = max(retail_and_recreation_percent_change_from_baseline),
+    count = n(),  # Number of data points# Maximum value for each state
+  ) %>%
+  ungroup() %>%
+  arrange(median_value) |>
+  mutate(state_with_count = paste(sub_region_1, "(n =", count, ")"))
+
+
+min_labels <- df_ordered %>%
+  filter(retail_and_recreation_percent_change_from_baseline == min_value) %>%
+  group_by(sub_region_1) %>%
+  slice(1) %>%  # Keep only the first occurrence of min
+  ungroup()
+
+max_labels <- df_ordered %>%
+  filter(retail_and_recreation_percent_change_from_baseline == max_value) %>%
+  group_by(sub_region_1) %>%
+  slice(1) %>%  # Keep only the first occurrence of max
+  ungroup()
+
+# Plot with reordered states by median value
+ggplot(df_ordered, aes(x = reorder(state_with_count, median_value), y = retail_and_recreation_percent_change_from_baseline)) +
+      ylim(-120,300) +
+  coord_flip() +
+  geom_boxplot() +
+  geom_text(data = min_labels, aes(label = date),
+            hjust = 1.2, size = 2.5, color = "red") +
+  # Label the maximum values
+  geom_text(data = max_labels, aes(label = date),
+            hjust = -0.2, size = 2.5, color = "darkgreen") +
+  labs(title = "Retail Value Changes by State (Ordered by Median)", x = "State", y = "Value") +
+
+    theme_minimal()
+
+
+```
+```{r}
+# retail channge from baseline 
+result <- cmd |>
+  group_by(sub_region_1) |>
+
+  summarize(min_value = min(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    min_date = date[which.min(retail_and_recreation_percent_change_from_baseline)],
+    max_value = max(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    max_date = date[which.max(retail_and_recreation_percent_change_from_baseline)])
+print(result)
+write.csv(result, "result.csv", row.names = FALSE)
+
+
+```
+
+
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+
+
+
+
+# Minimum retail value dates by county
+result_min <- cmd |>
+  group_by(sub_region_2) |>  
+  arrange(retail_and_recreation_percent_change_from_baseline, date) |>
+  summarize(
+    min_value = first(retail_and_recreation_percent_change_from_baseline),
+    min_date = first(date)
+  )
+
+
+print(result_min)
+
+# Count occurrences of min dates
+date_counts_min <- table(result_min$min_date)
+date_counts_df_min <- as.data.frame(date_counts_min)
+sorted_dates_min <- date_counts_df_min[order(-date_counts_df_min$Freq), ]
+print(sorted_dates_min)
+
+# Histogram of minimum retail dates
+ggplot(result_min, aes(x = min_date)) +
+  geom_histogram(binwidth = 7, fill = "red", color = "black") +
+  labs(
+    title = "Histogram of Minimum Retail Value Change Dates",
+    x = "Date of Minimum Retail Value",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+# Maximum retail value dates by county
+result_max <- cmd |>
+  group_by(sub_region_2) |>
+  arrange(desc(retail_and_recreation_percent_change_from_baseline), date) |>  # Sort by retail (descending) then date
+  summarize(
+    max_value = first(retail_and_recreation_percent_change_from_baseline),  # First retail value (maximum)
+    max_date = first(date)      # Corresponding date
+  )
+
+print(result_max)
+
+# Histogram of maximum retail dates
+ggplot(result_max, aes(x = max_date)) +
+  geom_histogram(binwidth = 7, fill = "green", color = "black") +
+  labs(
+    title = "Histogram of Maximum Retail Value Change Dates",
+    x = "Date of Maximum Retail Value",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+# residential percent change from baseline 
+# Excluded holiday dates that would have misrepresented COVID effects
+excluded_dates <- as.Date(c("2020-12-25", "2020-11-26", "2020-04-12", "2021-01-01"))  
+
+# Residential value change over time 
+residential_df <- mobility_data |>
+  filter(!is.na(residential_percent_change_from_baseline)) |>
+  filter(country_region == "United States") |> 
+  filter(sub_region_2 != "") |> 
+  filter(sub_region_1 != "") |> 
+  select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> 
+  mutate(date = as.Date(date)) |> 
+  filter(!date %in% excluded_dates)
+
+df_ordered <- residential_df %>%
+  group_by(sub_region_1) %>%
+  mutate(
+    median_value = median(residential_percent_change_from_baseline),
+    min_value = min(residential_percent_change_from_baseline),  # Minimum value for each state
+    max_value = max(residential_percent_change_from_baseline),
+    count = n()  # Number of data points
+  ) %>%
+  ungroup() %>%
+  arrange(median_value) |>
+  mutate(state_with_count = paste(sub_region_1, "(n =", count, ")"))
+
+min_labels <- df_ordered %>%
+  filter(residential_percent_change_from_baseline == min_value) %>%
+  group_by(sub_region_1) %>%
+  slice(1) %>%  # Keep only the first occurrence of min
+  ungroup()
+
+max_labels <- df_ordered %>%
+  filter(residential_percent_change_from_baseline == max_value) %>%
+  group_by(sub_region_1) %>%
+  slice(1) %>%  # Keep only the first occurrence of max
+  ungroup()
+
+# Plot with reordered states by median value
+ggplot(df_ordered, aes(x = reorder(state_with_count, median_value), y = residential_percent_change_from_baseline)) +
+  ylim(-120, 300) +
+  coord_flip() +
+  geom_boxplot() +
+  geom_text(data = min_labels, aes(label = date),
+            hjust = 1.2, size = 2.5, color = "red") +
+  # Label the maximum values
+  geom_text(data = max_labels, aes(label = date),
+            hjust = -0.2, size = 2.5, color = "darkgreen") +
+  labs(title = "Residential Value Changes by State (Ordered by Median)", x = "State", y = "Value") +
+  theme_minimal()
+```
+
+```{r}
+# table for min and max changes for residential baseline 
+
+# Residential change from baseline 
+result <- residential_df |>
+  group_by(sub_region_1) |>
+  summarize(
+    min_value = min(residential_percent_change_from_baseline, na.rm = TRUE),
+    min_date = date[which.min(residential_percent_change_from_baseline)],
+    max_value = max(residential_percent_change_from_baseline, na.rm = TRUE),
+    max_date = date[which.max(residential_percent_change_from_baseline)]
+  )
+print(result)
+write.csv(result, "result.csv", row.names = FALSE)
+
+```
+
+```{r}
+# histograms for min and max 
+library(dplyr)
+library(ggplot2)
+
+# Minimum residential value dates by county
+result_min <- residential_df |>
+  group_by(sub_region_2) |>  
+  arrange(residential_percent_change_from_baseline, date) |>
+  summarize(
+    min_value = first(residential_percent_change_from_baseline),
+    min_date = first(date)
+  )
+
+print(result_min)
+
+# Count occurrences of min dates
+date_counts_min <- table(result_min$min_date)
+date_counts_df_min <- as.data.frame(date_counts_min)
+sorted_dates_min <- date_counts_df_min[order(-date_counts_df_min$Freq), ]
+print(sorted_dates_min)
+
+# Histogram of minimum residential dates
+ggplot(result_min, aes(x = min_date)) +
+  geom_histogram(binwidth = 7, fill = "red", color = "black") +
+  labs(
+    title = "Histogram of Minimum Residential Value Change Dates",
+    x = "Date of Minimum Residential Value",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+# Maximum residential value dates by county
+result_max <- residential_df |>
+  group_by(sub_region_2) |>
+  arrange(desc(residential_percent_change_from_baseline), date) |>  # Sort by residential (descending) then date
+  summarize(
+    max_value = first(residential_percent_change_from_baseline),  # First residential value (maximum)
+    max_date = first(date)      # Corresponding date
+  )
+
+print(result_max)
+
+# Histogram of maximum residential dates
+ggplot(result_max, aes(x = max_date)) +
+  geom_histogram(binwidth = 7, fill = "green", color = "black") +
+  labs(
+    title = "Histogram of Maximum Residential Value Change Dates",
+    x = "Date of Maximum Residential Value",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+People started quarantining mid to late April. This matches the retail histograms above because people shopped early april and then quarantined mid to late april. 
 # 2. Check for missing values in texas_cases
 
 ```{r}
@@ -217,6 +483,8 @@ head(texas_cases, 20)
 write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
 
 ```
+
+
 
 Next, we can take county_name and state, and standardize them. We want to ensure they are consistent for merging with the county fields in the other .csv's later on.
 
@@ -271,6 +539,26 @@ head(texas_cases_aggregated, 5)
 ```
 
 To change the data into rates and look for outliers, we need to do data cleaning in cases_plus because we need its population information.
+
+Grab the standard deviation and averages of the confirmed cases and deaths. We want to filter out everything before march 1st because we only see results after 3/1. 
+
+```{r}
+std_and_avg <- texas_cases |>
+  filter(date > "2020-03-01") |>
+  group_by(county_name) |>
+  summarize(
+    avg_deaths = round(mean(deaths, na.rm = TRUE), 2),
+    sd_deaths = round(sd(deaths, na.rm = TRUE), 2),
+    avg_confirmed_cases = round(mean(confirmed_cases, na.rm = TRUE), 2),
+    sd_confirmed_cases = round(sd(confirmed_cases, na.rm = TRUE), 2)
+  )
+
+print(std_and_avg)
+write.csv(std_and_avg, "std_and_avg.csv", row.names = FALSE)
+
+
+```
+This data shows us how the daily count for cases and death changes for each county. 
 
 # 3. Check for missing values in cases_plus
 
