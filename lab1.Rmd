@@ -718,7 +718,7 @@ ggplot(statewide_long, aes(x = date, y = growth_rate, color = metric, fill = met
 
 
 ```
-From this graph, we see that the lockdown mandate, mask mandate, and thanksgiving surge warning worked to flatten the curve. We see that small changes can have an impact. 
+From this graph, we see that the lockdown mandate, mask mandate, and thanksgiving surge warning worked to flatten the curve. We see that small changes can have an impact.
 ```{r}
 #max death and confirmed cases per county
 max_deaths_per_county <- texas_cases |>
@@ -730,14 +730,18 @@ max_deaths_per_county <- texas_cases |>
 print(max_deaths_per_county)
 
 ```
-
-
 ```{r}
 install.packages("lubridate")  # If not installed
 library(lubridate)
+library(dplyr)
+```
 
-texas_cases_with_30_60_Growth_Rate <- texas_cases |>
-  group_by(county_name) |>
+
+```{r}
+
+# Calculate growth rates with additional bins
+texas_cases_with_extended_Growth_Rate <- texas_cases %>%
+  group_by(county_name) %>%
   mutate(
     # Find the date of the first non-zero case for each county
     date_of_first_case = date[which(confirmed_cases > 0)[1]],
@@ -754,18 +758,54 @@ texas_cases_with_30_60_Growth_Rate <- texas_cases |>
       date >= date_of_first_case + days(30) & date < date_of_first_case + days(60),
       (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
       NA
+    ),
+    
+    # Calculate rate of growth for days 61 to 90 after the first case
+    rate_of_growth_60_90_days = ifelse(
+      date >= date_of_first_case + days(60) & date < date_of_first_case + days(90),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
+    ),
+    
+    # Calculate rate of growth for days 91 to 120 after the first case
+    rate_of_growth_90_120_days = ifelse(
+      date >= date_of_first_case + days(90) & date < date_of_first_case + days(120),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
+    ),
+    
+    # Calculate rate of growth for days 121 to 150 after the first case
+    rate_of_growth_120_150_days = ifelse(
+      date >= date_of_first_case + days(120) & date < date_of_first_case + days(150),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
+    ),
+    
+    # Calculate rate of growth for days 151 to 180 after the first case
+    rate_of_growth_150_180_days = ifelse(
+      date >= date_of_first_case + days(150) & date < date_of_first_case + days(180),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
     )
-  ) |>
-  group_by(county_name) |>
+  ) %>%
+  group_by(county_name) %>%
   summarise(
     # Calculate average rates of growth over the specified periods
     date_of_first_case = first(na.omit(date_of_first_case)),
     rate_of_growth_first_30_days = mean(na.omit(rate_of_growth_first_30_days)),
-    rate_of_growth_30_60_days = mean(na.omit(rate_of_growth_30_60_days))
-  ) |>
+    rate_of_growth_30_60_days = mean(na.omit(rate_of_growth_30_60_days)),
+    rate_of_growth_60_90_days = mean(na.omit(rate_of_growth_60_90_days)),
+    rate_of_growth_90_120_days = mean(na.omit(rate_of_growth_90_120_days)),
+    rate_of_growth_120_150_days = mean(na.omit(rate_of_growth_120_150_days)),
+    rate_of_growth_150_180_days = mean(na.omit(rate_of_growth_150_180_days))
+  ) %>%
   ungroup()
 
-summary(texas_cases_with_30_60_Growth_Rate)
+# Show a summary of the new data frame
+summary(texas_cases_with_extended_Growth_Rate)
+
+
+
 
 ```
 
@@ -1452,24 +1492,439 @@ head(tx_data, 10)
 
 ```
 
+
 ```{r}
-tx_data_with_gr <- tx_data_with_gr %>%
-  mutate(infection_rate = confirmed_cases / total_pop,
-         death_rate = deaths / confirmed_cases)
+# Load required package
+library(dplyr)
+
+# Join tx_data with the growth rate columns from texas_cases_with_extended_Growth_Rate
+tx_data_with_gr <- tx_data %>%
+  left_join(texas_cases_with_extended_Growth_Rate, by = "county_name") %>%
+  mutate(
+    infection_rate = confirmed_cases / total_pop,
+    death_rate = deaths / confirmed_cases
+  )
+
+# Show the updated table
+tx_data_with_gr
+
+# Write the updated table to CSV
+write.csv(tx_data_with_gr, "tx_data_with_gr.csv", row.names = FALSE)
+
+```
+
+
+now we can visualize our new object. We can visualize the growth rates in the top 10 texas counties. We can compare day 0 to day 150 to see trends.  
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the data from the CSV (assuming it's already loaded as tx_data_with_gr)
+# If you need to load it manually, you can use:
+# tx_data_with_gr <- read.csv("path_to_your_file.csv", stringsAsFactors = FALSE)
+
+# Select the top 10 counties by rate_of_growth_first_30_days
+top_counties <- tx_data_with_gr %>%
+  arrange(desc(rate_of_growth_first_30_days)) %>%
+  slice_head(n = 10)
+
+# Pivot the growth rates to long format for plotting
+top_counties_long <- top_counties %>%
+  select(county_name, rate_of_growth_first_30_days, rate_of_growth_30_60_days) %>%
+  pivot_longer(
+    cols = c(rate_of_growth_first_30_days, rate_of_growth_30_60_days),
+    names_to = "period",
+    values_to = "growth_rate"
+  ) %>%
+  mutate(period = recode(period,
+                         "rate_of_growth_first_30_days" = "First 30 Days",
+                         "rate_of_growth_30_60_days" = "Days 31-60"))
+
+# Create the paired bar chart
+ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("First 30 Days" = "#1f77b4", "Days 31-60" = "#d62728")) +
+  labs(
+    title = "COVID-19 Case Growth Rates in Top 10 Texas Counties",
+    subtitle = "Comparing First 30 Days vs. Days 31-60 After First Case",
+    x = "Average Daily Growth Rate (%)",
+    y = "County",
+    fill = "Period"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+
+```
+
+
+```{r}
+
+              library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the data (assuming it's already calculated as texas_cases_with_extended_Growth_Rate)
+# If you need to load it manually or recalculate, use the previous code to generate it
+# texas_cases_with_extended_Growth_Rate <- ... (your previous code here)
+
+# Select the top 10 counties by rate_of_growth_first_30_days
+top_counties <- texas_cases_with_extended_Growth_Rate %>%
+  arrange(desc(rate_of_growth_first_30_days)) %>%
+  slice_head(n = 10)
+
+# Pivot the growth rates to long format for plotting, including all six periods
+top_counties_long <- top_counties %>%
+  select(county_name, rate_of_growth_first_30_days, rate_of_growth_30_60_days, 
+         rate_of_growth_60_90_days, rate_of_growth_90_120_days, 
+         rate_of_growth_120_150_days, rate_of_growth_150_180_days) %>%
+  pivot_longer(
+    cols = c(rate_of_growth_first_30_days, rate_of_growth_30_60_days, 
+             rate_of_growth_60_90_days, rate_of_growth_90_120_days, 
+             rate_of_growth_120_150_days, rate_of_growth_150_180_days),
+    names_to = "period",
+    values_to = "growth_rate"
+  ) %>%
+  mutate(period = recode(period,
+                         "rate_of_growth_first_30_days" = "Days 1-30",
+                         "rate_of_growth_30_60_days" = "Days 31-60",
+                         "rate_of_growth_60_90_days" = "Days 61-90",
+                         "rate_of_growth_90_120_days" = "Days 91-120",
+                         "rate_of_growth_120_150_days" = "Days 121-150",
+                         "rate_of_growth_150_180_days" = "Days 151-180"))
+
+# Create the paired bar chart
+ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Days 1-30" = "#1f77b4", "Days 31-60" = "#d62728",
+                              "Days 61-90" = "#2ca02c", "Days 91-120" = "#ff7f0e",
+                              "Days 121-150" = "#9467bd", "Days 151-180" = "#8c564b")) +
+  labs(
+    title = "COVID-19 Case Growth Rates in Top 10 Texas Counties",
+    subtitle = "Comparing Growth Rates Across Six 30-Day Periods After First Case",
+    x = "Average Daily Growth Rate (%)",
+    y = "County",
+    fill = "Period"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
 
 ```
 
 ```{r}
-# add growth rate to our dataset 
-# Load dplyr if not already loaded
+# graph without the first 30 days 
 library(dplyr)
+library(ggplot2)
+library(tidyr)
 
-# Join tx_data with the growth rate columns from texas_cases_with_30_60_Growth_Rate
-tx_data_with_gr <- tx_data %>%
-  left_join(texas_cases_with_30_60_Growth_Rate, by = "county_name")
+# Load the data (assuming it's already calculated as texas_cases_with_extended_Growth_Rate)
+# If you need to load it manually or recalculate, use the previous code to generate it
+# texas_cases_with_extended_Growth_Rate <- ... (your previous code here)
 
-# Show the updated table
-tx_data_with_gr
+# Select the top 10 counties by rate_of_growth_30_60_days (first remaining period)
+top_counties <- texas_cases_with_extended_Growth_Rate %>%
+  arrange(desc(rate_of_growth_30_60_days)) %>%
+  slice_head(n = 10)
+
+# Pivot the growth rates to long format for plotting, excluding first 30 days
+top_counties_long <- top_counties %>%
+  select(county_name, rate_of_growth_30_60_days, rate_of_growth_60_90_days, 
+         rate_of_growth_90_120_days, rate_of_growth_120_150_days, 
+         rate_of_growth_150_180_days) %>%
+  pivot_longer(
+    cols = c(rate_of_growth_30_60_days, rate_of_growth_60_90_days, 
+             rate_of_growth_90_120_days, rate_of_growth_120_150_days, 
+             rate_of_growth_150_180_days),
+    names_to = "period",
+    values_to = "growth_rate"
+  ) %>%
+  mutate(period = recode(period,
+                         "rate_of_growth_30_60_days" = "Days 31-60",
+                         "rate_of_growth_60_90_days" = "Days 61-90",
+                         "rate_of_growth_90_120_days" = "Days 91-120",
+                         "rate_of_growth_120_150_days" = "Days 121-150",
+                         "rate_of_growth_150_180_days" = "Days 151-180"))
+
+# Create the paired bar chart
+ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Days 31-60" = "#d62728",
+                              "Days 61-90" = "#2ca02c",
+                              "Days 91-120" = "#ff7f0e",
+                              "Days 121-150" = "#9467bd",
+                              "Days 151-180" = "#8c564b")) +
+  labs(
+    title = "COVID-19 Case Growth Rates in Top 10 Texas Counties",
+    subtitle = "Comparing Growth Rates Across Days 31-180 After First Case",
+    x = "Average Daily Growth Rate (%)",
+    y = "County",
+    fill = "Period"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+```
+
+
+```{r}
+# install tigris for graphs 
+install.packages("tigris")
+install.packages("reshape2")
+
+```
+
+```{r}
+# infection rate 
+library(ggplot2)
+
+# Create the scatter plot
+ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate, color = median_income, size = total_pop)) +
+  geom_point(alpha = 0.6) +
+  scale_color_gradient(low = "#d62728", high = "#1f77b4", name = "Median Income ($)") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_size_continuous(name = "Population") +
+  labs(
+    title = "Infection Rate vs. Median Age in Texas Counties",
+    subtitle = "Colored by Median Income, Sized by Population",
+    x = "Median Age",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+# ------- 
+library(dplyr)
+library(ggplot2)
+
+# Select the top 10 counties by infection_rate
+top_10_counties <- tx_data_with_gr %>%
+  arrange(desc(infection_rate)) %>%
+  slice_head(n = 10)
+
+# Create the horizontal bar chart
+ggplot(top_10_counties, aes(x = infection_rate, y = county_name, fill = county_name)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title = "Top 10 Texas Counties by Infection Rate",
+    x = "Infection Rate (% of Population)",
+    y = "County",
+    fill = "County"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.y = element_text(size = 10),
+    legend.position = "none"  # Remove legend since fill is redundant with y-axis
+  )
+
+library(ggplot2)
+
+# Create the histogram
+ggplot(tx_data_with_gr, aes(x = infection_rate)) +
+  geom_histogram(binwidth = 0.01, fill = "#1f77b4", color = "black", alpha = 0.7) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title = "Distribution of Infection Rate Across Texas Counties",
+    x = "Infection Rate (% of Population)",
+    y = "Number of Counties"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+library(tigris)
+library(sf)
+library(dplyr)
+library(ggplot2)
+
+# Load Texas county shapefile
+tx_counties <- counties(state = "TX", cb = TRUE, class = "sf")
+
+# Clean county names in tx_data_with_gr to match shapefile (remove " county" and capitalize)
+tx_data_with_gr <- tx_data_with_gr %>%
+  mutate(county_name_clean = toupper(gsub(" county", "", county_name)))
+
+# Clean county names in shapefile (remove " County" and capitalize)
+tx_counties <- tx_counties %>%
+  mutate(NAME = toupper(gsub(" County", "", NAME)))
+
+# Join the data with the shapefile
+tx_map_data <- tx_counties %>%
+  left_join(tx_data_with_gr, by = c("NAME" = "county_name_clean"))
+
+# Create the choropleth map
+ggplot(data = tx_map_data) +
+  geom_sf(aes(fill = infection_rate)) +
+  scale_fill_gradient(low = "#fee8c8", high = "#e34a33", 
+                      labels = scales::percent, name = "Infection Rate") +
+  labs(
+    title = "Infection Rate by County in Texas",
+    subtitle = "Proportion of Population Infected"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+library(dplyr)
+library(ggplot2)
+
+# Select the top 10 counties by infection_rate
+top_10_counties <- tx_data_with_gr %>%
+  arrange(desc(infection_rate)) %>%
+  slice_head(n = 10)
+
+# Create the horizontal bar chart
+ggplot(top_10_counties, aes(x = infection_rate, y = reorder(county_name, infection_rate), fill = county_name)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title = "Top 10 Texas Counties by Infection Rate",
+    x = "Infection Rate (% of Population)",
+    y = "County",
+    fill = "County"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none"
+  )
+
+library(ggplot2)
+
+# Create the scatter plot
+ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate)) +
+  geom_point(color = "#1f77b4", alpha = 0.6) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Infection Rate vs. Median Age in Texas Counties",
+    x = "Median Age",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+library(ggplot2)
+
+# Create the scatter plot with color
+ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate, color = median_income)) +
+  geom_point(alpha = 0.6) +
+  scale_color_gradient(low = "#d62728", high = "#1f77b4", name = "Median Income ($)") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Infection Rate vs. Median Age in Texas Counties",
+    subtitle = "Colored by Median Income",
+    x = "Median Age",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+library(ggplot2)
+
+# Create the scatter plot with size
+ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate, size = total_pop)) +
+  geom_point(color = "#1f77b4", alpha = 0.6) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_size_continuous(name = "Population") +
+  labs(
+    title = "Infection Rate vs. Median Age in Texas Counties",
+    subtitle = "Sized by Total Population",
+    x = "Median Age",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+
+# Calculate the average growth rate across all periods
+tx_data_with_gr <- tx_data_with_gr %>%
+  mutate(avg_growth_rate = rowMeans(select(., starts_with("rate_of_growth")), na.rm = TRUE))
+
+# Select variables for correlation
+corr_data <- tx_data_with_gr %>%
+  select(infection_rate, median_age, median_income, total_pop, death_rate, avg_growth_rate)
+
+# Calculate correlation matrix
+corr_matrix <- cor(corr_data, use = "complete.obs")
+
+# Melt the matrix for ggplot
+corr_melted <- melt(corr_matrix)
+
+# Create the heatmap
+ggplot(corr_melted, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "#d62728", mid = "white", high = "#1f77b4", 
+                       name = "Correlation", limits = c(-1, 1)) +
+  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
+  labs(
+    title = "Correlation Heatmap of Infection Rate and Other Variables",
+    x = "",
+    y = ""
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+library(ggplot2)
+
+# Create the scatter plot
+ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate, color = median_income, size = total_pop)) +
+  geom_point(alpha = 0.6) +
+  scale_color_gradient(low = "#d62728", high = "#1f77b4", name = "Median Income ($)") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_size_continuous(name = "Population") +
+  labs(
+    title = "Infection Rate vs. Median Age in Texas Counties",
+    subtitle = "Colored by Median Income, Sized by Population",
+    x = "Median Age",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+
 
 ```
 
