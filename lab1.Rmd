@@ -1684,6 +1684,8 @@ ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) 
 # install tigris for graphs 
 install.packages("tigris")
 install.packages("reshape2")
+install.packages("sf")
+library(sf)
 
 ```
 
@@ -1923,6 +1925,111 @@ ggplot(tx_data_with_gr, aes(x = median_age, y = infection_rate, color = median_i
     plot.subtitle = element_text(hjust = 0.5),
     legend.position = "right"
   )
+
+
+library(dplyr)
+library(ggplot2)
+
+# Create age groups based on median_age
+tx_data_with_gr <- tx_data_with_gr %>%
+  mutate(age_group = cut(median_age, 
+                         breaks = c(0, 30, 35, 40, 45, 50, Inf),
+                         labels = c("<30", "30-35", "35-40", "40-45", "45-50", "50+")))
+
+# Create the box plot
+ggplot(tx_data_with_gr, aes(x = age_group, y = infection_rate, fill = age_group)) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Infection Rate by Median Age Group in Texas Counties",
+    x = "Median Age Group",
+    y = "Infection Rate (% of Population)",
+    fill = "Age Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none"
+  )
+
+
+  library(ggplot2)
+
+# Scatter plot with trend line
+ggplot(tx_data_with_gr, aes(x = avg_growth_rate, y = infection_rate)) +
+  geom_point(color = "#1f77b4", alpha = 0.6) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title = "Infection Rate vs. Average Growth Rate in Texas Counties",
+    x = "Average Growth Rate (% per Day)",
+    y = "Infection Rate (% of Population)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+  library(ggplot2)
+
+# Scatter plot with color by median_age
+ggplot(tx_data_with_gr, aes(x = infection_rate, y = death_rate, color = median_age)) +
+  geom_point(alpha = 0.6) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_gradient(low = "#d62728", high = "#1f77b4", name = "Median Age") +
+  labs(
+    title = "Infection Rate vs. Death Rate in Texas Counties",
+    subtitle = "Colored by Median Age",
+    x = "Infection Rate (% of Population)",
+    y = "Death Rate (% of Cases)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "right"
+  )
+
+  library(dplyr)
+library(ggplot2)
+
+# Use the age_group column created earlier
+# Create the box plot
+ggplot(tx_data_with_gr, aes(x = age_group, y = death_rate, fill = age_group)) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Death Rate by Median Age Group in Texas Counties",
+    x = "Median Age Group",
+    y = "Death Rate (% of Cases)",
+    fill = "Age Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none"
+  )
+
+  library(ggplot2)
+
+# Scatter plot with trend line
+ggplot(tx_data_with_gr, aes(x = total_pop, y = avg_growth_rate)) +
+  geom_point(color = "#1f77b4", alpha = 0.6) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Average Growth Rate vs. Total Population in Texas Counties",
+    x = "Total Population",
+    y = "Average Growth Rate (% per Day)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
 
 
 
