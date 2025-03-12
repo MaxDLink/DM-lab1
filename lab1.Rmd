@@ -1272,7 +1272,7 @@ ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) 
 ```
 
 
-```{r, results='hide'}
+```{r}
 # install tigris for graphs 
 install.packages("tigris")
 install.packages("reshape2")
