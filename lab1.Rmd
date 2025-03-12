@@ -560,6 +560,215 @@ write.csv(std_and_avg, "std_and_avg.csv", row.names = FALSE)
 ```
 This data shows us how the daily count for cases and death changes for each county. 
 
+```{r}
+
+# growth rate for confirmed_cases and deaths 
+texas_cases_with_growth_rate <- texas_cases |>
+  filter(date > "2020-03-01") |> # skip march 1st 
+  arrange(county_name, date) |> # sort by county name alphabetically, and date 
+  mutate(cases_growth_rate = ifelse(lag(confirmed_cases) > 0, 
+                              (confirmed_cases - lag(confirmed_cases)) / 
+                                lag(confirmed_cases) * 100, 0)) |> 
+  mutate(death_growth_rate = ifelse(lag(deaths) > 0, 
+                              (deaths - lag(deaths)) / 
+                                lag(deaths) * 100, 0))
+
+print(texas_cases_with_growth_rate)
+write.csv(texas_cases_with_growth_rate, "texas_cases_with_growth_rate.csv", row.names = FALSE)
+
+```
+
+We added two new columns called cases_growth_rate and death_growth_rate. These columns show the growth rate of the cases and deaths, respectively. The deaths do not show as high a growth rate as the cases. We can make a chart to show this.  
+
+```{r}
+# chart to show cases growth rate versus deaths growth rate per county 
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Assuming the data is loaded as a data frame called 'texas_cases_with_growth_rate'
+# If not, uncomment and adjust the following line to read your CSV:
+# texas_cases_with_growth_rate <- read.csv("path_to_your_file.csv", stringsAsFactors = FALSE)
+
+# Convert date to Date class if not already done
+texas_cases_with_growth_rate <- texas_cases_with_growth_rate |>
+  mutate(date = as.Date(date))
+
+# Calculate statewide daily averages and filter out NAs
+statewide_avg <- texas_cases_with_growth_rate |>
+  group_by(date) |>
+  summarize(
+    avg_case_growth = mean(cases_growth_rate, na.rm = TRUE),
+    avg_death_growth = mean(death_growth_rate, na.rm = TRUE)
+  ) |>
+  filter(!is.na(avg_case_growth) & !is.na(avg_death_growth))
+
+# Pivot data to long format for easier plotting
+statewide_long <- statewide_avg |>
+  pivot_longer(
+    cols = c(avg_case_growth, avg_death_growth),
+    names_to = "metric",
+    values_to = "growth_rate"
+  ) |>
+  mutate(metric = recode(metric, 
+                         "avg_case_growth" = "Cases", 
+                         "avg_death_growth" = "Deaths"))
+
+# Create the plot
+ggplot(statewide_long, aes(x = date, y = growth_rate, color = metric, fill = metric)) +
+  geom_smooth(method = "loess", span = 0.1, size = 1.2, se = TRUE, alpha = 0.2) +
+  scale_color_manual(values = c("Cases" = "#1f77b4", "Deaths" = "#d62728")) +
+  scale_fill_manual(values = c("Cases" = "#1f77b4", "Deaths" = "#d62728")) +
+  labs(
+    title = "Daily Growth Rates of COVID-19 Cases and Deaths in Texas",
+    subtitle = "Statewide Average with 95% Confidence Intervals (March 2020 - January 2021)",
+    x = "Date",
+    y = "Growth Rate (%)",
+    color = "Metric",
+    fill = "Metric"
+  ) +
+  scale_y_continuous(limits = c(0, 20), breaks = seq(0, 20, 2)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+
+
+```
+
+There are more cases than there are deaths.The growth rates for the cases vary by a significant amount, so we can capture finer changes by making another graph with a log scale. This log scale can show us smaller changes if we pick a small scale like 0.1% to 1000%
+```{r}
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Convert date to Date class 
+texas_cases_with_growth_rate <- texas_cases_with_growth_rate %>%
+  mutate(date = as.Date(date))
+
+# Calculate statewide daily averages and filter out NAs
+statewide_avg <- texas_cases_with_growth_rate %>%
+  group_by(date) %>%
+  summarize(
+    avg_case_growth = mean(cases_growth_rate, na.rm = TRUE),
+    avg_death_growth = mean(death_growth_rate, na.rm = TRUE)
+  ) %>%
+  filter(!is.na(avg_case_growth) & !is.na(avg_death_growth))
+
+# Pivot data to long format for plotting
+statewide_long <- statewide_avg %>%
+  pivot_longer( 
+    cols = c(avg_case_growth, avg_death_growth),
+    names_to = "metric",
+    values_to = "growth_rate"
+  ) %>%
+  mutate(metric = recode(metric, # new metric column that holds growth_rates 
+                         "avg_case_growth" = "Cases", 
+                         "avg_death_growth" = "Deaths"))
+
+# Define key Texas policy dates
+policy_dates <- data.frame(
+  date = as.Date(c("2020-03-31", "2020-05-01", "2020-07-02", "2020-11-30")),
+  event = c("Statewide Lockdown", "Phase 1 Reopening", "Mask Mandate", "Thanksgiving Surge Warning")
+)
+
+# Create the enhanced plot with log-scale and event lines
+ggplot(statewide_long, aes(x = date, y = growth_rate, color = metric, fill = metric)) +
+  # Smoothed lines with confidence intervals
+  geom_smooth(method = "loess", span = 0.1, size = 1.2, se = TRUE, alpha = 0.2) +
+  # Add vertical event lines
+  geom_vline(data = policy_dates, aes(xintercept = date), linetype = "dashed", color = "black", size = 0.5) +
+  # Add labels for events (use only 'date' and 'event' from policy_dates, no 'metric')
+  geom_text(data = policy_dates, aes(x = date, y = 1000, label = event), 
+            angle = 90, vjust = -0.5, hjust = 1, size = 3.5, color = "black", 
+            inherit.aes = FALSE) +  # Explicitly disable inheritance of aesthetics from ggplot()
+  # Color scheme
+  scale_color_manual(values = c("Cases" = "#1f77b4", "Deaths" = "#d62728")) +
+  scale_fill_manual(values = c("Cases" = "#1f77b4", "Deaths" = "#d62728")) +
+  # Log-scale y-axis to handle extreme spikes
+  scale_y_log10(limits = c(0.1, 1000), breaks = c(0.1, 1, 10, 100, 1000), 
+                labels = scales::comma, name = "Growth Rate (%)") +
+  # X-axis with monthly breaks
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  # Labels and title
+  labs(
+    title = "Daily Growth Rates of COVID-19 Cases and Deaths in Texas",
+    subtitle = "Statewide Average with 95% Confidence Intervals (Log Scale, March 2020 - January 2021)",
+    x = "Date",
+    y = "Growth Rate (%)",
+    color = "Metric",
+    fill = "Metric"
+  ) +
+  # Theme adjustments for clarity
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+
+```
+From this graph, we see that the lockdown mandate, mask mandate, and thanksgiving surge warning worked to flatten the curve. We see that small changes can have an impact. 
+```{r}
+#max death and confirmed cases per county
+max_deaths_per_county <- texas_cases |>
+  group_by(county_name) |>
+  summarize(max_deaths = max(deaths, na.rm = TRUE), Max_confirmed_cases = max(confirmed_cases, na.rm = TRUE)) |>
+  arrange(desc(max_deaths))
+
+
+print(max_deaths_per_county)
+
+```
+
+
+```{r}
+install.packages("lubridate")  # If not installed
+library(lubridate)
+
+texas_cases_with_30_60_Growth_Rate <- texas_cases |>
+  group_by(county_name) |>
+  mutate(
+    # Find the date of the first non-zero case for each county
+    date_of_first_case = date[which(confirmed_cases > 0)[1]],
+    
+    # Calculate rate of growth for the first 30 days after the first case
+    rate_of_growth_first_30_days = ifelse(
+      date > date_of_first_case & date < date_of_first_case + days(30),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
+    ),
+    
+    # Calculate rate of growth for days 31 to 60 after the first case
+    rate_of_growth_30_60_days = ifelse(
+      date >= date_of_first_case + days(30) & date < date_of_first_case + days(60),
+      (confirmed_cases - lag(confirmed_cases, 1)) / lag(confirmed_cases, 1) * 100,
+      NA
+    )
+  ) |>
+  group_by(county_name) |>
+  summarise(
+    # Calculate average rates of growth over the specified periods
+    date_of_first_case = first(na.omit(date_of_first_case)),
+    rate_of_growth_first_30_days = mean(na.omit(rate_of_growth_first_30_days)),
+    rate_of_growth_30_60_days = mean(na.omit(rate_of_growth_30_60_days))
+  ) |>
+  ungroup()
+
+summary(texas_cases_with_30_60_Growth_Rate)
+
+```
+
 # 3. Check for missing values in cases_plus
 
 ```{r}
@@ -1224,19 +1433,45 @@ How (densely) populated is the county? TOTOAL POP. What resources does a county 
 
 ```{R}
 
-# filters for only tx 
-tx_data = clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
+# Load dplyr if not already loaded (you likely have this already)
+library(dplyr)
 
-# add more columns if needed for analysis 
+# Filter for only TX
+tx_data <- clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
+
+# Select specific columns for analysis
 tx_data <- subset(tx_data, select = c(county_name, confirmed_cases, deaths, median_age, median_income, total_pop))
 
+# Alphabetize by county_name
+tx_data <- tx_data %>%
+  arrange(county_name)
 
-
+# Show the first 10 rows
 head(tx_data, 10)
 
 
 ```
 
+```{r}
+tx_data_with_gr <- tx_data_with_gr %>%
+  mutate(infection_rate = confirmed_cases / total_pop,
+         death_rate = deaths / confirmed_cases)
+
+```
+
+```{r}
+# add growth rate to our dataset 
+# Load dplyr if not already loaded
+library(dplyr)
+
+# Join tx_data with the growth rate columns from texas_cases_with_30_60_Growth_Rate
+tx_data_with_gr <- tx_data %>%
+  left_join(texas_cases_with_30_60_Growth_Rate, by = "county_name")
+
+# Show the updated table
+tx_data_with_gr
+
+```
 
 ```{r}
 # scatter plot with trend line 
