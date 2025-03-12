@@ -730,7 +730,10 @@ max_deaths_per_county <- texas_cases |>
 print(max_deaths_per_county)
 
 ```
+
 ```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org/")) # for knitting to markdown 
 install.packages("lubridate")  # If not installed
 library(lubridate)
 library(dplyr)
