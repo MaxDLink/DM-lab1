@@ -4,6 +4,10 @@ Authors: Max Link, Logan Lu, Jadon Klipsch
 Date: "2025-02-21"
 Description: "In this project, we will focus on cleaning and understanding the data.
   We will follow the Crisp-DM framework"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  
 ---
 
 ```{r setup, include=FALSE}
