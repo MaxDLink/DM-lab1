@@ -205,7 +205,7 @@ print(sorted_dates_min)
 
 # Histogram of minimum retail dates
 ggplot(result_min, aes(x = min_date)) +
-  geom_histogram(binwidth = 7, fill = "red", color = "black") +
+  geom_histogram(binwidth = 7, fill = "purple", color = "black") +
   labs(
     title = "Histogram of Minimum Retail Value Change Dates",
     x = "Date of Minimum Retail Value",
@@ -226,7 +226,7 @@ print(result_max)
 
 # Histogram of maximum retail dates
 ggplot(result_max, aes(x = max_date)) +
-  geom_histogram(binwidth = 7, fill = "green", color = "black") +
+  geom_histogram(binwidth = 7, fill = "blue", color = "black") +
   labs(
     title = "Histogram of Maximum Retail Value Change Dates",
     x = "Date of Maximum Retail Value",
@@ -364,7 +364,7 @@ print(sorted_dates_min)
 
 # Histogram of minimum residential dates
 ggplot(result_min, aes(x = min_date)) +
-  geom_histogram(binwidth = 7, fill = "red", color = "black") +
+  geom_histogram(binwidth = 7, fill = "purple", color = "black") +
   labs(
     title = "Histogram of Minimum Residential Value Change Dates",
     x = "Date of Minimum Residential Value",
@@ -385,7 +385,7 @@ print(result_max)
 
 # Histogram of maximum residential dates
 ggplot(result_max, aes(x = max_date)) +
-  geom_histogram(binwidth = 7, fill = "green", color = "black") +
+  geom_histogram(binwidth = 7, fill = "blue", color = "black") +
   labs(
     title = "Histogram of Maximum Residential Value Change Dates",
     x = "Date of Maximum Residential Value",
@@ -1090,10 +1090,14 @@ tx_data <- subset(tx_data, select = c(county_name, confirmed_cases, deaths, medi
 tx_data <- tx_data %>%
   arrange(county_name)
 
-# Show the first 10 rows
-head(tx_data, 10)
 
+# rename the dataframe 
+renamed_tx_data <- subset(tx_data, select = c(county_name, confirmed_cases, deaths, median_age, median_income, total_pop))
 
+# Assign new column names to the new data frame
+colnames(renamed_tx_data) <- c("County", "Cases", "Deaths", "MedianAge", "MedianIncome", "Population")
+
+head(renamed_tx_data, 5)
 ```
 
 
@@ -1111,6 +1115,13 @@ tx_data_with_gr <- tx_data %>%
 
 # Show the updated table
 # tx_data_with_gr
+
+# rename tx_data_with_gr 
+renamed_tx_data_with_gr <- subset(tx_data_with_gr, select = c(county_name, confirmed_cases, deaths, median_age, median_income, total_pop, date_of_first_case, rate_of_growth_first_30_days, rate_of_growth_30_60_days, rate_of_growth_60_90_days, rate_of_growth_90_120_days, rate_of_growth_120_150_days, rate_of_growth_150_180_days, infection_rate, death_rate))
+# Assign new column names to the new data frame
+colnames(renamed_tx_data_with_gr) <- c("County", "Cases", "Deaths", "MedianAge", "MedianIncome", "Population", "FirstCases", "30 days", "30-60 days", "60-90 days", "90-120 days", "120-150 days", "150-180 days", "Inf.Rate", "DeathRate")
+
+head(renamed_tx_data_with_gr, 10)
 
 # Write the updated table to CSV
 write.csv(tx_data_with_gr, "tx_data_with_gr.csv", row.names = FALSE)
