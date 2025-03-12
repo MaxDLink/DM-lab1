@@ -4,9 +4,9 @@ Authors: Max Link, Logan Lu, Jadon Klipsch
 Date: "2025-02-21"
 Description: "In this project, we will focus on cleaning and understanding the data.
   We will follow the Crisp-DM framework"
-output:
+<!--output:
   pdf_document:
-    latex_engine: xelatex
+    latex_engine: xelatex-->
   
 ---
 
@@ -27,101 +27,15 @@ texas_cases <- read.csv('COVID-19/COVID-19_cases_TX.csv')
 cases_plus <- read.csv('COVID-19/COVID-19_cases_plus_census.csv')
 
 # displaying first 20 rows of report
-head(mobility_data, 20)
+# head(mobility_data, 20)
 
 # texas cases 
-head(texas_cases, 20)
+# head(texas_cases, 20)
 # + cases 
-head(cases_plus, 20)
+# head(cases_plus, 20)
 ```
 
-Crisp-DM Framework:
 
-1.  Problem Description (Business Understanding) [10] Describe the Problem: What is COVID-19, and what is social distancing and flattening the curve? Why is it important to look at data about the virus spread, hospitalizations, and available resources? [3 points]
-
-COVID-19 is a highly contagious respiratory illness caused by the SARS-CoV-2 virus, first identified in late 2019. Social distancing involves reducing physical interactions to slow the virus’s spread, aiming to "flatten the curve"—i.e., reduce the peak number of cases to avoid overwhelming healthcare systems. Analyzing data on virus spread, hospitalizations, and resources is critical to understand transmission patterns, predict healthcare demands, and develop effective interventions (e.g., vaccines or supplies by Johnson & Johnson).
-
-Choose a stakeholder for whom you analyze and, later on, model the data. Define some questions that are important for this stakeholder. What decisions can your stakeholders make, and how would they affect COVID-19 outcomes? Brainstorm this a lot since this choice will guide your exploration of this and all the following projects. Make sure you can produce actionable recommendations for these questions using your data later in your report. [7 point]
-
-Johnson & Johnson (J&J), a medical company focused on pharmaceuticals, medical devices, and consumer health products.
-
-Questions for J&J:
-
-# TODO - -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116
-
-1.  How does population density affect COVID-19 transmission rates across U.S. counties?
-
-2.  What is the relationship between social distancing compliance (mobility changes) and case growth?
-
-3.  How do hospital resources (e.g., beds per capita) correlate with mortality rates?
-
-4.  Which counties showed delayed social distancing responses, and how did this impact case surges?
-
-5.  What demographic or geographic factors predict higher demand for medical supplies or vaccines?
-
-Johnson and Johnson can make the following decisions:
-
--   Prioritize vaccine or medical supply distribution to high-risk, densely populated areas.
-
--   Partner with counties lacking resources to provide equipment or therapeutics.
-
--   Adjust production timelines based on predicted surges linked to mobility patterns.
-
-2.  Data Understanding [45]
-
-# Must include all three provided datasets in your analysis!
-
-Describe what data is available. Choose 5-10 important variables for the questions you have identified in the section above. Describe the type of data (scale, values, etc.) of the most critical variables in the data. [9 point]
-
-Data Available:
-
-1.  Global_Mobility_Report.csv: [insert info]
-
-2.  COVID-19 Case Data (hypothetical): [insert info]
-
-3.  County Resources Data (hypothetical): [insert info]
-
-# Questions to answer: -- update these to be 10 questions that concern the 10 important variables on lines 95 - 116
-
-1.  How does population density affect COVID-19 transmission rates across U.S. counties?
-
-2.  What is the relationship between social distancing compliance (mobility changes) and case growth?
-
-3.  How do hospital resources (e.g., beds per capita) correlate with mortality rates?
-
-4.  Which counties showed delayed social distancing responses, and how did this impact case surges?
-
-5.  What demographic or geographic factors predict higher demand for medical supplies or vaccines?
-
-# 10 important variables (critical \*):
-
-1.  Median_Income (cases_plus.csv): Explore how income levels correlate with Covid-19 cases or deaths, addressing "How does income affect covid status?"
-
-2.  Race_Population (cases_plus.csv): Does race affect covid status? Are there racial disparities in the data?
-
-3.  County_Name (texas_cases.csv) or County, State (cases_plus.csv): Compare urban vs rural counties & their impact on covid-19 status. City vs country
-
-4.  Public_Transportation_Users (cases_plus.csv): Does higher public transit use correlates with higher case rates?
-
-5.  Parents_in_labor_force (cases_plus.csv): Does parental labor force participation influences transmission rates?
-
--   
-
-    6.  confirmed_cases (texas_cases.csv or cases_plus.csv): Primary outcome variable to measure infection rates across other ?s
-
--   7.Deaths (texas_cases.csv or cases_plus.csv): Critical variable to assess mortality/severity of Covid-19
-
-8.  Rent (cases_plus.csv): proxy for housing cost & potential overcrowding, which could affect transmission risk
-
-9.  Year_House_Built (cases_plus.csv): The house age could cause poor ventilation which may affect transmission risk?
-
-10. Transit_stations_percent_change_from_baseline (mobility_data.csv, if us data included): Links mobility changes at transit hubs to public transportation use & case rates, if geographically compatible with U.S. counties
-
-# Description of critical variables:
-
-The confirmed_cases and Deaths are critical values because they let us answer our other questions about spread and intensity
-
-Verify data quality: Are there missing values? Duplicate Data? Outliers? Are those mistakes? How can these be fixed? Ensure your report states how much data is removed and how much you have left. [9 Points]
 
 # 1. Check for missing values in mobility_data
 
@@ -133,70 +47,17 @@ print("Missing values in mobility_data:")
 print(missing_mobility) 
 ```
 
-We have quite a few missing values in the mobility data, so lets get rid of the rows that contain the missing values. To do this, we can use the na.omit function and then verify by comparing the original mobility data with a cleaned mobility data.
-
-```{r}
-# remove rows that have missing data 
-clean_mobility_data <- na.omit(mobility_data)
-
-# verify the number of rows before and after removal 
-print(paste("Original number of rows in mobility_data:", nrow(mobility_data)))
-print(paste("Number of rows after removing missing values:", nrow(clean_mobility_data)))
-
-# check for missing values again to confirm. This shows zero missing values 
-missing_clean_mobility <- colSums(is.na(clean_mobility_data))
-print("Missing values in clean_mobility_data:")
-print(missing_clean_mobility)
-
-# manually remove metro_area and iso because those columns are blank 
-clean_mobility_data <- clean_mobility_data[, !names(clean_mobility_data) %in% c("metro_area", "iso_3166_2_code")]
-
-# display the first few rows of the cleaned data 
-head(clean_mobility_data)
-
-# write cleaned mobility_data to a CSV file
-write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
-
-```
-
-# Does clean_mobility_data have any other values that need to be changed?
-
-The mobility percentages are already numeric and normalized. Geographic identifiers are categorical. Date is temporal.
-
-The census_fips_code should be changed to always have five digits. We can fix this with zeros.
-
-```{r}
+We have quite a few missing values in the mobility data. We can get rid of them with filter.
 
 
-clean_mobility_data$census_fips_code <- sprintf("%05d", as.numeric(clean_mobility_data$census_fips_code))
-
-unfiltered_clean_mobility <- clean_mobility_data
-
-head(clean_mobility_data, 10)
-
-# Filter clean_mobility_data to include only Texas in sub_region_1
-clean_mobility_data <- clean_mobility_data %>%
-  filter(tolower(sub_region_1) == "texas")
-
-# convert date from <chr> to <date> format 
-clean_mobility_data$date <- as.Date(clean_mobility_data$date, format = "%Y-%m-%d")
-
-# updated date 
-head(clean_mobility_data, 10)
-
-# Write the filtered dataframe to clean_mobility_data.csv
-write.csv(clean_mobility_data, "clean_mobility_data.csv", row.names = FALSE)
-
-# TODO - Why do 3082841, 3082842, etc. numbers show up in the first row? 
-
-```
+# Mobility Data Cleaning and Visualizations 
 
 ```{r}
 
 # Excluded holiday dates that would have misrepresented covid effects
 excluded_dates <- as.Date(c("2020-12-25	", "2020-11-26", "2020-04-12", "2021-01-01"))  
 
-# Grocery value change over time 
+# New clean mobility to exclude holiday dates
 cmd <- mobility_data |>
   filter(!is.na(retail_and_recreation_percent_change_from_baseline)) |>
   filter(country_region == "United States") |> 
@@ -205,14 +66,61 @@ cmd <- mobility_data |>
   select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> 
   mutate(date = as.Date(date)) |> 
   filter(!date %in% excluded_dates)
-   
-  
+
+
+```
+
+Statistics for retail_and_recreation_percent_change_from_baseline
+
+```{r}
+
+
+# Function to calculate mode (since R doesn't have a built-in mode function)
+get_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+
+```
+
+
+```{r}
+# Retail_and_recreation_percent_change_From_baseline mobility data 
+
+retail_and_recreation <- cmd %>%
+  summarise(
+    Range = range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[2] - range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[1],
+    Mean = mean(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Median = median(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Mode = get_mode(retail_and_recreation_percent_change_from_baseline),
+    Variance = var(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
+    Std_Dev = sd(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)
+  )
+print("retail_and_recreation Statistics:")
+print(retail_and_recreation)
+
+```
+
+Visually explore the chosen mobility data attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
+
+
+```{r}
+
+# Retail_and_recreation_percent_change_from_baseline
+ggplot(cmd, aes(x = date, y = retail_and_recreation_percent_change_from_baseline)) +
+  geom_line(color = "orange") +
+  labs(title = "Retail and Recreation Mobility Change Over Time in The US",
+       x = "Date", y = "Percent Change from Baseline") +
+  theme_minimal()
+
+```
 
 
 
 
 
-
+```{r}
 
 
 df_ordered <- cmd %>%
@@ -277,9 +185,6 @@ write.csv(result, "result.csv", row.names = FALSE)
 library(dplyr)
 library(ggplot2)
 
-
-
-
 # Minimum retail value dates by county
 result_min <- cmd |>
   group_by(sub_region_2) |>  
@@ -330,7 +235,6 @@ ggplot(result_max, aes(x = max_date)) +
   theme_minimal()
 
 ```
-
 ```{r}
 # residential percent change from baseline 
 # Excluded holiday dates that would have misrepresented COVID effects
@@ -345,6 +249,41 @@ residential_df <- mobility_data |>
   select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> 
   mutate(date = as.Date(date)) |> 
   filter(!date %in% excluded_dates)
+```
+
+statistics for residential
+```{r}
+# Residential_Percent_Change_From_Baseline  mobility data 
+
+Residential <- residential_df %>%
+  summarise(
+    Range = range(residential_percent_change_from_baseline, na.rm = TRUE)[2] - range(residential_percent_change_from_baseline, na.rm = TRUE)[1],
+    Mean = mean(residential_percent_change_from_baseline, na.rm = TRUE),
+    Median = median(residential_percent_change_from_baseline, na.rm = TRUE),
+    Mode = get_mode(residential_percent_change_from_baseline),
+    Variance = var(residential_percent_change_from_baseline, na.rm = TRUE),
+    Std_Dev = sd(residential_percent_change_from_baseline, na.rm = TRUE)
+  )
+print("residential Statistics:")
+print(Residential)
+
+
+```
+
+```{r}
+# residential = at home 
+# Residential_percent_change_from_baseline
+ggplot(residential_df, aes(x = date, y = residential_percent_change_from_baseline)) +
+  geom_line(color = "lightblue") +
+  labs(title = "Residential Mobility Change Over Time in The US",
+       x = "Date", y = "Percent Change from Baseline") +
+  theme_minimal()
+
+
+```
+
+
+```{r}
 
 df_ordered <- residential_df %>%
   group_by(sub_region_1) %>%
@@ -456,6 +395,9 @@ ggplot(result_max, aes(x = max_date)) +
 
 ```
 People started quarantining mid to late April. This matches the retail histograms above because people shopped early april and then quarantined mid to late april. 
+
+
+
 # 2. Check for missing values in texas_cases
 
 ```{r}
@@ -481,7 +423,7 @@ texas_cases$date <- as.Date(texas_cases$date, format = "%Y-%m-%d")
 print("Updated structure of texas_cases:")
 str(texas_cases)
 print("First 20 rows of updated texas_cases with Date format")
-head(texas_cases, 20)
+# head(texas_cases, 20)
 
 # write to .csv 
 write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
@@ -519,30 +461,72 @@ head(texas_cases, 10)
 write.csv(texas_cases, "clean_texas_cases.csv", row.names = FALSE)
 
 
-
 ```
 
-state should be kept for merging with clean_mobility_data.csv
+Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in Texas cases and describe what they mean or if you find something interesting. [9 points]
 
-we can aggregate the cases & deaths, standardize them and make them rates, and do outlier detection.
-
-We can aggregate by the county_name
 
 ```{r}
-# Aggregate confirmed_cases and deaths by county_name, including "statewide unallocated"
-texas_cases_aggregated <- texas_cases %>%
-  group_by(county_name) %>%
-  summarise(total_confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            total_deaths = sum(deaths, na.rm = TRUE)) %>%
-  ungroup()
 
-# Verify the aggregated data
-print("Aggregated confirmed_cases and deaths by county_name (first 5 rows):")
-head(texas_cases_aggregated, 5)
+
+# confirmed cases texas_cases 
+
+confirmed_cases <- texas_cases %>%
+  summarise(
+    Range = range(confirmed_cases, na.rm = TRUE)[2] - range(confirmed_cases, na.rm = TRUE)[1],
+    Mean = mean(confirmed_cases, na.rm = TRUE),
+    Median = median(confirmed_cases, na.rm = TRUE),
+    Mode = get_mode(confirmed_cases),
+    Variance = var(confirmed_cases, na.rm = TRUE),
+    Std_Dev = sd(confirmed_cases, na.rm = TRUE)
+  )
+print("confirmed_cases Statistics:")
+print(confirmed_cases)
+
+
 
 ```
 
-To change the data into rates and look for outliers, we need to do data cleaning in cases_plus because we need its population information.
+```{r}
+# deaths texas_cases 
+
+deaths <- texas_cases %>%
+  summarise(
+    Range = range(deaths, na.rm = TRUE)[2] - range(deaths, na.rm = TRUE)[1],
+    Mean = mean(deaths, na.rm = TRUE),
+    Median = median(deaths, na.rm = TRUE),
+    Mode = get_mode(deaths),
+    Variance = var(deaths, na.rm = TRUE),
+    Std_Dev = sd(deaths, na.rm = TRUE)
+  )
+print("deaths Statistics:")
+print(deaths)
+
+```
+
+Visually explore the chosen Texas Data attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
+
+```{r}
+# confirmed cases over time 
+ggplot(texas_cases, aes(x = date, y = confirmed_cases)) +
+  geom_line(color = "red") +
+  labs(title = "Confirmed Cases Over Time in Texas",
+       x = "Date", y = "Confirmed Cases") +
+  theme_minimal()
+
+
+```
+
+```{r}
+# Deaths (Texas_cases.csv)
+ggplot(texas_cases, aes(x = date, y = deaths)) +
+  geom_line(color = "darkorange") +
+  labs(title = "Deaths Over Time in Texas",
+       x = "Date", y = "Deaths") +
+  theme_minimal()
+
+
+```
 
 Grab the standard deviation and averages of the confirmed cases and deaths. We want to filter out everything before march 1st because we only see results after 3/1. 
 
@@ -577,14 +561,14 @@ texas_cases_with_growth_rate <- texas_cases |>
                               (deaths - lag(deaths)) / 
                                 lag(deaths) * 100, 0))
 
-print(texas_cases_with_growth_rate)
+# print(texas_cases_with_growth_rate)
 write.csv(texas_cases_with_growth_rate, "texas_cases_with_growth_rate.csv", row.names = FALSE)
 
 ```
 
 We added two new columns called cases_growth_rate and death_growth_rate. These columns show the growth rate of the cases and deaths, respectively. The deaths do not show as high a growth rate as the cases. We can make a chart to show this.  
 
-```{r}
+```{r, fig.width=10}
 # chart to show cases growth rate versus deaths growth rate per county 
 library(dplyr)
 library(ggplot2)
@@ -647,7 +631,7 @@ ggplot(statewide_long, aes(x = date, y = growth_rate, color = metric, fill = met
 ```
 
 There are more cases than there are deaths.The growth rates for the cases vary by a significant amount, so we can capture finer changes by making another graph with a log scale. This log scale can show us smaller changes if we pick a small scale like 0.1% to 1000%
-```{r}
+```{r, fig.width=10}
 
 library(dplyr)
 library(ggplot2)
@@ -820,8 +804,8 @@ summary(texas_cases_with_extended_Growth_Rate)
 
 ```{r}
 missing_cases_plus <- colSums(is.na(cases_plus))
-print("Missing values in cases_plus:")
-print(missing_cases_plus)
+# print("Missing values in cases_plus:")
+# print(missing_cases_plus)
 ```
 
 We have 3142 missing values in certain columns. This means that these columns are completely empty because there are 3142 rows in the data. We can completely remove these columns and then prune for columns that only have some missing values like median_rent.
@@ -835,22 +819,21 @@ total_rows <- nrow(cases_plus)
 missing_counts <- colSums(is.na(cases_plus))
 
 # Debug: Print the missing counts to check values
-print("Missing value counts in cases_plus:")
-print(missing_counts)
+# print("Missing value counts in cases_plus:")
+# print(missing_counts)
 
 # Identify columns with missing values equal to the total number of rows (completely empty)
 empty_columns <- names(missing_counts[missing_counts == total_rows])
 
 # Debug: Print the empty columns to verify
-print("Columns identified as completely empty:")
-print(empty_columns)
-
+# print("Columns identified as completely empty:")
+# print(empty_columns)
 # Remove completely empty columns from cases_plus
 cases_plus_cleaned <- cases_plus[, !names(cases_plus) %in% empty_columns]
 
 # Verify the number of columns before and after removal
-print(paste("Original number of columns in cases_plus:", ncol(cases_plus)))
-print(paste("Number of columns after removing empty columns:", ncol(cases_plus_cleaned))) 
+# print(paste("Original number of columns in cases_plus:", ncol(cases_plus)))
+# print(paste("Number of columns after removing empty columns:", ncol(cases_plus_cleaned)))
 
 ```
 
@@ -870,10 +853,10 @@ print(paste("Number of rows after removing rows with any remaining missing value
 # check for missing values in the final cleaned dataset to confirm
 missing_final <- colSums(is.na(clean_cases_plus_final))
 print("Missing values in clean_cases_plus_final:")
-print(missing_final)
+# print(missing_final)
 
 # display the first few rows of the final cleaned dataset
-head(clean_cases_plus_final)
+# head(clean_cases_plus_final)
 
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 
@@ -884,7 +867,7 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 We can convert the date from <chr> to <date> format for time series analysis.
 
 ```{r}
-head(clean_cases_plus_final, 10)
+# head(clean_cases_plus_final, 10)
 
 
 # update the date column to Date format 
@@ -892,9 +875,9 @@ clean_cases_plus_final$date <- as.Date(clean_cases_plus_final$date, format = "%Y
 
 # verify the updated data
 print("Updated structure of clean_cases_plus_final:")
-str(clean_cases_plus_final)
+# str(clean_cases_plus_final)
 print("First 5 rows of updated texas_cases with Date format")
-head(clean_cases_plus_final, 20)
+# head(clean_cases_plus_final, 5)
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 
 
@@ -909,7 +892,7 @@ The state_fips_code and county_fips_code may be standardized. The state_fips_cod
 clean_cases_plus_final$county_fips_code <- sprintf("%05d", as.numeric(clean_cases_plus_final$county_fips_code))
 clean_cases_plus_final$state_fips_code <- sprintf("%02d", as.numeric(clean_cases_plus_final$state_fips_code))
 
-head(clean_cases_plus_final, 20)
+# head(clean_cases_plus_final, 20)
 
 write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALSE)
 ```
@@ -922,7 +905,7 @@ clean_cases_plus_final$county_name <- tolower(clean_cases_plus_final$county_name
 clean_cases_plus_final$state <- tolower(clean_cases_plus_final$state)
 
 # Verify the changes (first 5 rows)
-head(clean_cases_plus_final, 5)
+# head(clean_cases_plus_final, 5)
 
 
 # Write the updated clean_cases_plus_final to a CSV file
@@ -930,75 +913,12 @@ write.csv(clean_cases_plus_final, "clean_cases_plus_final.csv", row.names = FALS
 
 ```
 
-cases & deaths --\> aggregation? Standardization/rates, outlier detection
 
-Public_transport_users --\> convert to rates
-
-parents_in_labor_force --\> proportion (with family_households or total_pop if it is a count)
-
-Rent --\> Ensure numeric? Standardize?
-
-Race_population --\> Can we split this? Ensure numeric. Can we make proportions?
-
-Median_Income --\> Ensure numeric
-
-Median_Year_Structure_Built --\> Ensure Numeric. Show as decades?
-
-```{r}
-# outlier detection 
-
-
-# make a boxplot for each clean dataframe
-
-
-# clean_cases_plus_final 
-
-# Filter the dataframe to include only Texas (TX)
-tx_data = clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
-
-# Create the boxplot for Texas only
-crop = ggplot(data = tx_data, 
-              mapping = aes(x = state, y = confirmed_cases)) + 
-       geom_boxplot() +
-       labs(title = "Boxplot of Confirmed Cases in Texas",
-            x = "State",
-            y = "Confirmed Cases") +
-       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
-
-
-# Display the plot
-crop
-
-
-# clean_mobility_data 
-# clean_mobility_data
-
-# clean_texas_cases 
-#clean_texas_cases
-
-```
-
-# Statistics
-
-Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in these files and describe what they mean or if you find something interesting. [9 points]
-
-```{r}
-
-
-# Function to calculate mode (since R doesn't have a built-in mode function)
-get_mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max(tabulate(match(x, ux)))]
-}
-
-
-```
+Give appropriate statistics (range, mode, mean, median, variance, etc.) for the most important variables in cases plus and describe what they mean or if you find something interesting. [9 points]
 
 ```{r}
 
 # median_income: 
-
-
 
 income_stats <- clean_cases_plus_final %>%
   summarise(
@@ -1011,9 +931,6 @@ income_stats <- clean_cases_plus_final %>%
   )
 print("Median_Income Statistics:")
 print(income_stats)
-
-
-
 
 
 ```
@@ -1079,109 +996,27 @@ print(median_age_stats)
 
 ```
 
-```{r}
 
-
-# confirmed cases texas_cases 
-
-confirmed_cases <- texas_cases %>%
-  summarise(
-    Range = range(confirmed_cases, na.rm = TRUE)[2] - range(confirmed_cases, na.rm = TRUE)[1],
-    Mean = mean(confirmed_cases, na.rm = TRUE),
-    Median = median(confirmed_cases, na.rm = TRUE),
-    Mode = get_mode(confirmed_cases),
-    Variance = var(confirmed_cases, na.rm = TRUE),
-    Std_Dev = sd(confirmed_cases, na.rm = TRUE)
-  )
-print("confirmed_cases Statistics:")
-print(confirmed_cases)
-
-
-
-```
-
-```{r}
-# deaths texas_cases 
-
-deaths <- texas_cases %>%
-  summarise(
-    Range = range(deaths, na.rm = TRUE)[2] - range(deaths, na.rm = TRUE)[1],
-    Mean = mean(deaths, na.rm = TRUE),
-    Median = median(deaths, na.rm = TRUE),
-    Mode = get_mode(deaths),
-    Variance = var(deaths, na.rm = TRUE),
-    Std_Dev = sd(deaths, na.rm = TRUE)
-  )
-print("deaths Statistics:")
-print(deaths)
-
-```
-```{r}
-# Retail_and_recreation_percent_change_From_baseline mobility data 
-
-retail_and_recreation <- clean_mobility_data %>%
-  summarise(
-    Range = range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[2] - range(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)[1],
-    Mean = mean(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
-    Median = median(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
-    Mode = get_mode(retail_and_recreation_percent_change_from_baseline),
-    Variance = var(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE),
-    Std_Dev = sd(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)
-  )
-print("retail_and_recreation Statistics:")
-print(retail_and_recreation)
-
-```
-
-```{r}
-# Residential_Percent_Change_From_Baseline  mobility data 
-
-Residentia <- clean_mobility_data %>%
-  summarise(
-    Range = range(residential_percent_change_from_baseline, na.rm = TRUE)[2] - range(residential_percent_change_from_baseline, na.rm = TRUE)[1],
-    Mean = mean(residential_percent_change_from_baseline, na.rm = TRUE),
-    Median = median(residential_percent_change_from_baseline, na.rm = TRUE),
-    Mode = get_mode(residential_percent_change_from_baseline),
-    Variance = var(residential_percent_change_from_baseline, na.rm = TRUE),
-    Std_Dev = sd(residential_percent_change_from_baseline, na.rm = TRUE)
-  )
-print("residential Statistics:")
-print(Residentia)
-
-
-```
-
-Visually explore the chosen attributes appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
+Visually explore the chosen attributes in Cases Plus appropriately. Provide an interpretation for each graph. Explain why you chose the visualization for each attribute type. [9 points]
 
 ```{r}
 # median income graph 
 
 ggplot(clean_cases_plus_final, aes(x = median_income)) +
   geom_histogram(binwidth = 5000, fill = "blue", color = "black") +
-  labs(title = "Distribution of Median Income in Texas Counties",
+  labs(title = "Distribution of Median Income in US Counties",
        x = "Median Income ($)", y = "Frequency") +
   theme_minimal()
 
 ```
 
-```{r}
-# confirmed cases
-ggplot(clean_cases_plus_final, aes(y = confirmed_cases)) +
-  geom_boxplot(fill = "lightblue") +
-  labs(title = "Box Plot of Confirmed Cases in Texas Counties",
-       y = "Confirmed Cases") +
-  theme_minimal()
 
-
-
-
-```
 
 ```{r}
 # deaths
 ggplot(clean_cases_plus_final, aes(y = deaths)) +
   geom_boxplot(fill = "lightgreen") +
-  labs(title = "Box Plot of Deaths in Texas Counties",
+  labs(title = "Box Plot of Deaths in US Counties",
        y = "Deaths") +
   theme_minimal()
 
@@ -1191,244 +1026,15 @@ ggplot(clean_cases_plus_final, aes(y = deaths)) +
 # Median_age
 ggplot(clean_cases_plus_final, aes(x = median_age)) +
   geom_histogram(binwidth = 1, fill = "purple", color = "black") +
-  labs(title = "Distribution of Median Age in Texas Counties",
+  labs(title = "Distribution of Median Age in US Counties",
        x = "Median Age (years)", y = "Frequency") +
   theme_minimal()
 
 
 ```
 
-```{r}
-# confirmed cases over time 
-ggplot(texas_cases, aes(x = date, y = confirmed_cases)) +
-  geom_line(color = "red") +
-  labs(title = "Confirmed Cases Over Time in Texas",
-       x = "Date", y = "Confirmed Cases") +
-  theme_minimal()
-
-
-```
-
-```{r}
-# Deaths (Texas_cases.csv)
-ggplot(texas_cases, aes(x = date, y = deaths)) +
-  geom_line(color = "darkorange") +
-  labs(title = "Deaths Over Time in Texas",
-       x = "Date", y = "Deaths") +
-  theme_minimal()
-
-
-```
-
-```{r}
-
-# Retail_and_recreation_percent_change_from_baseline
-ggplot(clean_mobility_data, aes(x = date, y = retail_and_recreation_percent_change_from_baseline)) +
-  geom_line(color = "orange") +
-  labs(title = "Retail and Recreation Mobility Change Over Time in Texas",
-       x = "Date", y = "Percent Change from Baseline") +
-  theme_minimal()
-
-```
-
-```{r}
-# residential = at home 
-# Residential_percent_change_from_baseline
-ggplot(clean_mobility_data, aes(x = date, y = residential_percent_change_from_baseline)) +
-  geom_line(color = "lightblue") +
-  labs(title = "Residential Mobility Change Over Time in Texas",
-       x = "Date", y = "Percent Change from Baseline") +
-  theme_minimal()
-
-
-```
-
-Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
-
-```{r}
-# Assuming your datasets are already loaded as data frames
-# For example:
-# texas_case <- read.csv("path_to_texas_case.csv")
-# clean_mobility_data <- read.csv("path_to_clean_mobility_data.csv")
-
-
-# sub_region_2 to lower in clean_mobility_data 
-
-clean_mobility_data$sub_region_2 <- tolower(clean_mobility_data$sub_region_2)
-
-
-# Merge the datasets
-merged_data <- texas_cases %>%
-  left_join(
-    select(clean_mobility_data, sub_region_2, date, retail_and_recreation_percent_change_from_baseline, residential_percent_change_from_baseline),
-    by = c("county_name" = "sub_region_2", "date" = "date")
-  )
-
-# Now merged_data contains all columns from texas_case plus retail_and_recreation_percent_change
-
-
-merged_data <- merged_data[complete.cases(merged_data), ]
-
-merged_data
-
-merged_data <- subset(merged_data, select = -c(state_fips_code, state, county_fips_code))
-
-# merged_data 10 items 
-head(merged_data, 10) 
-
-write.csv(merged_data, "merged_data.csv", row.names = FALSE)
-
-
-```
-
-```{r}
-# graphs for merged_data 
-
-cor_matrix <- cor(merged_data[, c("confirmed_cases", "deaths", 
-                                  "retail_and_recreation_percent_change_from_baseline", 
-                                  "residential_percent_change_from_baseline")],
-                  use = "complete.obs", method = "pearson")
-print(cor_matrix)
-
-library(ggplot2)
-
-ggplot(merged_data, aes(x = retail_and_recreation_percent_change_from_baseline, y = confirmed_cases)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", color = "red") +
-  labs(title = "Confirmed Cases vs. Retail & Recreation Mobility Change",
-       x = "Retail & Recreation Mobility Change (%)", 
-       y = "Confirmed Cases") +
-  theme_minimal()
-
-library(dplyr)
-
-merged_data <- merged_data %>% 
-  mutate(retail_mobility_group = ifelse(retail_and_recreation_percent_change_from_baseline < -25, 
-                                          "high_reduction", "low_reduction"))
-
-
-ggplot(merged_data, aes(x = retail_mobility_group, y = confirmed_cases)) +
-  geom_boxplot(fill = "orange") +
-  labs(title = "Confirmed Cases by Retail Mobility Group",
-       x = "Retail Mobility Group", 
-       y = "Confirmed Cases") +
-  theme_minimal()
-
-library(ggplot2)
-library(scales)
-
-ggplot(merged_data, aes(x = date)) +
-  geom_line(aes(y = confirmed_cases), color = "red") +
-  geom_line(aes(y = retail_and_recreation_percent_change_from_baseline), color = "blue") +
-  scale_y_continuous(name = "Confirmed Cases",
-                     sec.axis = sec_axis(~., name = "Retail & Recreation % Change")) +
-  labs(title = "Confirmed Cases and Retail & Recreation Mobility Over Time",
-       x = "Date") +
-  theme_minimal()
-
-library(ggplot2)
-
-ggplot(merged_data, aes(x = confirmed_cases, y = deaths)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", color = "green") +
-  labs(title = "Confirmed Cases vs. Deaths",
-       x = "Confirmed Cases",
-       y = "Deaths") +
-  theme_minimal()
-
-# Calculate correlation
-cor(merged_data$confirmed_cases, merged_data$deaths, use = "complete.obs")
-
-library(ggplot2)
-library(scales)
-
-ggplot(merged_data, aes(x = date)) +
-  geom_line(aes(y = confirmed_cases), color = "red") +
-  geom_line(aes(y = retail_and_recreation_percent_change_from_baseline), color = "blue") +
-  scale_y_continuous(name = "Confirmed Cases",
-                     sec.axis = sec_axis(~., name = "Retail & Recreation % Change")) +
-  labs(title = "Confirmed Cases and Retail & Recreation Mobility Over Time",
-       x = "Date") +
-  theme_minimal()
-
-ccf(merged_data$confirmed_cases, 
-    merged_data$residential_percent_change_from_baseline, 
-    lag.max = 30, 
-    na.action = na.pass)
-
-
-library(dplyr)
-
-# Categorize retail mobility changes into groups based on a threshold (e.g., -25%)
-merged_data <- merged_data %>%
-  mutate(retail_mobility_group = ifelse(retail_and_recreation_percent_change_from_baseline < -25,
-                                          "high_reduction", "low_reduction"))
-
-# Box plot
-ggplot(merged_data, aes(x = retail_mobility_group, y = confirmed_cases)) +
-  geom_boxplot(fill = "orange") +
-  labs(title = "Confirmed Cases by Retail Mobility Group",
-       x = "Retail Mobility Group",
-       y = "Confirmed Cases") +
-  theme_minimal()
-
-# Group-wise averages
-group_averages <- merged_data %>%
-  group_by(retail_mobility_group) %>%
-  summarise(avg_cases = mean(confirmed_cases, na.rm = TRUE),
-            avg_deaths = mean(deaths, na.rm = TRUE))
-print(group_averages)
-
-model <- lm(confirmed_cases ~ retail_and_recreation_percent_change_from_baseline + residential_percent_change_from_baseline, 
-            data = merged_data)
-summary(model)
-
-library(ggplot2)
-ggplot(cases_plus, aes(x = median_income, y = deaths)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", color = "red") +
-  labs(title = "Median Income vs. Confirmed Cases",
-       x = "Median Income ($)", y = "Confirmed Cases") +
-  theme_minimal()
-cor(cases_plus$median_income, cases_plus$confirmed_cases, use = "complete.obs")
-
-ggplot(cases_plus, aes(x = median_age, y = deaths)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", color = "blue") +
-  labs(title = "Median Age vs. Deaths",
-       x = "Median Age (years)", y = "Deaths") +
-  theme_minimal()
-cor(cases_plus$median_age, cases_plus$deaths, use = "complete.obs")
-
-ggplot(cases_plus, aes(x = confirmed_cases, y = deaths)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", color = "green") +
-  labs(title = "Confirmed Cases vs. Deaths",
-       x = "Confirmed Cases", y = "Deaths") +
-  theme_minimal()
-cor(cases_plus$confirmed_cases, cases_plus$deaths, use = "complete.obs")
-
-
-
-``` 
-
-
-
-
-Now we can see how deaths relate to retail_and_recreation_percent_change_from_baseline and residential_percent_change_from_baseline ....
-
-
-## TODO - explore relationship between texas_cases cases and death and the population from clean_cases_plus_final.csv. This can be a rate. Scrub any outliers
-
-We can make the data in texas_cases rates to make it comparable across regions. This is important because counties have different population densities, so in order to make the counties comparable we should adjust for different population sizes. This will avoid raw counts, so our data will be more accurate.We will use the population from clean_cases_plus_final.csv so that we can change the data to rates.
-
-```{r}
-# use clean_cases_plus_final.csv population 
-
-```
 
 Outlier detection identifies extreme values in cases and deaths that could skew the analysis. Large counties could have extremely high death rates, which would change averages. Outlier could be real cases, or they could be errors in data. We must judge whether to keep them or not.
-
 ```{r}
 # outlier detection 
 
@@ -1439,10 +1045,10 @@ Outlier detection identifies extreme values in cases and deaths that could skew 
 # clean_cases_plus_final 
 
 # Filter the dataframe to include only Texas (TX)
-tx_data = clean_cases_plus_final[clean_cases_plus_final$State == "tx", ]
+tx_outliers_clean_cases_plus = clean_cases_plus_final[clean_cases_plus_final$state == "tx", ]
 
 # Create the boxplot for Texas only
-crop = ggplot(data = tx_data, 
+crop = ggplot(data = tx_outliers_clean_cases_plus, 
               mapping = aes(x = state, y = confirmed_cases)) + 
        geom_boxplot() +
        labs(title = "Boxplot of Confirmed Cases in Texas",
@@ -1454,29 +1060,20 @@ crop = ggplot(data = tx_data,
 # Display the plot
 crop
 
-
-# clean_mobility_data 
-#clean_mobility_data
-
-# clean_texas_cases 
-#clean_texas_cases
-
-
 ```
 
-# Possible correlation analysis with other two .csv's? cor() function
+
 
 3.  Data Preparation [30]
-
-# put all counties in a table and aggregate their total cases/deaths and look at the amount of transportation in that column. More transportation means more cases? Less cases? Joining mobility data and census data (cases plus or texas cases) --- we must use US counties as the objects
-
-```{R}
-
-```
 
 Create a data set with objects as rows and features as columns. Use as objects counties in the US. The data set must be included in your report. Provide a table in your Word document that shows the data (values) for the first 10 rows for all the features you have selected and/or created. Interesting additional features may be, for example: [30 points]
 
 How (densely) populated is the county? TOTOAL POP. What resources does a county have (money, hospital)? MEDIAN_INCOME What is the social distancing response, and how long did it take after the first case? You can come up with more critical questions for your chosen stakeholder.
+
+Explore relationships between attributes: Look at the attributes and then use cross-tabulation, correlation, group-wise averages, box plots, etc., as appropriate. [9 points]
+
+
+
 
 ```{R}
 
@@ -1513,7 +1110,7 @@ tx_data_with_gr <- tx_data %>%
   )
 
 # Show the updated table
-tx_data_with_gr
+# tx_data_with_gr
 
 # Write the updated table to CSV
 write.csv(tx_data_with_gr, "tx_data_with_gr.csv", row.names = FALSE)
@@ -1521,16 +1118,13 @@ write.csv(tx_data_with_gr, "tx_data_with_gr.csv", row.names = FALSE)
 ```
 
 
-now we can visualize our new object. We can visualize the growth rates in the top 10 texas counties. We can compare day 0 to day 150 to see trends.  
+now we can visualize our new object. We can visualize the growth rates in the top 10 texas counties. We can compare day 0 to day 150 to see trends.
 
-```{r}
+Started with day 0 to day 60
+```{r, fig.width=10}
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-
-# Load the data from the CSV (assuming it's already loaded as tx_data_with_gr)
-# If you need to load it manually, you can use:
-# tx_data_with_gr <- read.csv("path_to_your_file.csv", stringsAsFactors = FALSE)
 
 # Select the top 10 counties by rate_of_growth_first_30_days
 top_counties <- tx_data_with_gr %>%
@@ -1569,17 +1163,12 @@ ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) 
 
 
 ```
+Tried 0 to 180
+```{r, fig.width=10}
 
-
-```{r}
-
-              library(dplyr)
+library(dplyr)
 library(ggplot2)
 library(tidyr)
-
-# Load the data (assuming it's already calculated as texas_cases_with_extended_Growth_Rate)
-# If you need to load it manually or recalculate, use the previous code to generate it
-# texas_cases_with_extended_Growth_Rate <- ... (your previous code here)
 
 # Select the top 10 counties by rate_of_growth_first_30_days
 top_counties <- texas_cases_with_extended_Growth_Rate %>%
@@ -1627,16 +1216,12 @@ ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) 
   )
 
 ```
-
-```{r}
+Tried days 30-180 to zoom in visually
+```{r, fig.width=10}
 # graph without the first 30 days 
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-
-# Load the data (assuming it's already calculated as texas_cases_with_extended_Growth_Rate)
-# If you need to load it manually or recalculate, use the previous code to generate it
-# texas_cases_with_extended_Growth_Rate <- ... (your previous code here)
 
 # Select the top 10 counties by rate_of_growth_30_60_days (first remaining period)
 top_counties <- texas_cases_with_extended_Growth_Rate %>%
@@ -1687,7 +1272,7 @@ ggplot(top_counties_long, aes(x = growth_rate, y = county_name, fill = period)) 
 ```
 
 
-```{r}
+```{r, results='hide'}
 # install tigris for graphs 
 install.packages("tigris")
 install.packages("reshape2")
@@ -1696,6 +1281,8 @@ library(sf)
 
 ```
 
+
+Making more graphs for comparison of variables from our new object
 ```{r}
 # infection rate 
 library(ggplot2)
@@ -2028,7 +1615,7 @@ ggplot(tx_data_with_gr, aes(x = total_pop, y = avg_growth_rate)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(labels = scales::comma) +
   labs(
-    title = "Average Growth Rate vs. Total Population in Texas Counties",
+    title = "Average Growth Rate vs. Total Population in Tx Counties",
     x = "Total Population",
     y = "Average Growth Rate (% per Day)"
   ) +
@@ -2042,167 +1629,3 @@ ggplot(tx_data_with_gr, aes(x = total_pop, y = avg_growth_rate)) +
 
 ```
 
-```{r}
-# scatter plot with trend line 
-# median age and cases per 100k 
-
-
-# Load libraries
-library(dplyr)
-library(ggplot2)
-
-# Prepare tx_data_agg (same as before)
-tx_data_agg <- clean_cases_plus_final %>%
-  filter(state == "tx") %>%
-  group_by(county_name) %>%
-  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            median_age = first(median_age),
-            median_income = first(median_income),
-            total_pop = first(total_pop)) %>%
-  ungroup() %>%
-  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
-
-# Create scatterplot with trend line
-ggplot(tx_data_agg, aes(x = median_age, y = cases_per_100k)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE, color = "blue") +
-  labs(title = "Cases per 100k vs. Median Age in Texas Counties",
-       x = "Median Age", y = "Cases per 100,000") +
-  theme_minimal()
-
-```
-Counties with lower median ages have lower case rates. Older people do not go out as much as younger people. 
-
-
-```{r}
-# Load libraries
-library(dplyr)
-library(ggplot2)
-
-# Prepare tx_data_agg
-tx_data_agg <- clean_cases_plus_final %>%
-  filter(state == "tx") %>%
-  group_by(county_name) %>%
-  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            total_pop = first(total_pop)) %>%
-  ungroup() %>%
-  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
-
-# Create histogram
-ggplot(tx_data_agg, aes(x = cases_per_100k)) +
-  geom_histogram(binwidth = 500, fill = "lightblue", color = "black") +
-  labs(title = "Distribution of Cases per 100k in Texas Counties",
-       x = "Cases per 100,000", y = "Number of Counties") +
-  theme_minimal()
-```
-
-cases_per_100k = the number of confirmed COVID-19 cases per 100,000 people in each Texas county
-
-number of counties that fall into each bin on the x axis 
-
-This shows the distribution of case rates among counties. For example, 5 counties have about 5,000 cases per 100,000 people
-
-we can also make a scatterplot to label the counties
-
-```{r}
-# Load libraries
-library(dplyr)
-library(ggplot2)
-library(ggrepel)  # For better label placement
-
-# Prepare tx_data_agg
-tx_data_agg <- clean_cases_plus_final %>%
-  filter(state == "tx") %>%
-  group_by(county_name) %>%
-  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            total_pop = first(total_pop)) %>%
-  ungroup() %>%
-  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000)
-
-# Add a row index for plotting
-tx_data_agg <- tx_data_agg %>%
-  mutate(index = row_number())
-
-# Calculate the 95th percentile threshold
-threshold <- quantile(tx_data_agg$cases_per_100k, 0.95, na.rm = TRUE)
-
-# Verify the number of counties in the top 5%
-top_counties <- subset(tx_data_agg, cases_per_100k >= threshold)
-print(paste("Number of counties in top 5%:", nrow(top_counties)))
-print(top_counties)
-
-# Create scatterplot and label top 5% counties
-ggplot(tx_data_agg, aes(x = index, y = cases_per_100k)) +
-  geom_point(data = subset(tx_data_agg, cases_per_100k < threshold), color = "black") +
-  geom_point(data = top_counties, color = "red") +
-  geom_text_repel(data = top_counties, aes(label = county_name), size = 3, max.overlaps = 20) +
-  labs(title = "Cases per 100k in Texas Counties with Top 5% Highlighted",
-       x = "County Index", y = "Cases per 100,000") +
-  theme_minimal() +
-  ylim(0, max(tx_data_agg$cases_per_100k, na.rm = TRUE) * 1.1)
-
-
-
-```
-The scatterplot visualizes the cases_per_100k (cases per 100,000 people) for Texas counties, with labels for the top 5% of counties by cases_per_100k.
-
-we can verify that there are about 10 counties labeled to match our threshold. These 10 counties will be our outliers. 
-
-
-```{r}
-
-# Load library
-library(dplyr)
-
-# Filter and aggregate tx_data in one step
-tx_data_agg <- clean_cases_plus_final %>%
-  filter(state == "tx") %>%
-  group_by(county_name) %>%
-  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            deaths = sum(deaths, na.rm = TRUE),
-            median_age = first(median_age),
-            median_income = first(median_income),
-            total_pop = first(total_pop)) %>%
-  ungroup()
-
-# Fit and summarize linear regression model
-model <- lm(confirmed_cases ~ median_age + median_income + total_pop, data = tx_data_agg)
-summary(model)
-
-
-```
-
-There could be multiple issues with this model like outliers and skewed results from raw counts etc. so lets make another regression model and fix some of these issues 
-
-```{r}
-# Load library
-library(dplyr)
-
-# Filter, aggregate, and model in one pipeline with normalization
-model <- clean_cases_plus_final %>%
-  filter(state == "tx") %>%
-  group_by(county_name) %>%
-  summarise(confirmed_cases = sum(confirmed_cases, na.rm = TRUE),
-            median_age = first(median_age),
-            median_income = first(median_income),
-            total_pop = first(total_pop)) %>%
-  ungroup() %>%
-  mutate(cases_per_100k = (confirmed_cases / total_pop) * 100000) %>%  # Normalize
-  lm(cases_per_100k ~ median_age + median_income + total_pop, data = .)
-
-# Summarize the model
-summary(model)
-
-```
-
-# [dataset]
-
-4.  Data Preparation [15]
-
-Formulate some recommendations for the questions developed in section 1. based on the results in 2. and 3. Make sure your recommendations are based on data and are actionable for the stakeholder (i.e., the stakeholder has the power to execute the recommendations). [15 points]
-
-# recs for questions in section 1
-
-[recs based on results in 2 and 3, based on data & actionable for J&J]
-
-Does masking help reduce the number of cases and deaths? Does staying home affect the number of cases and deaths? Vaccinations? House age?
