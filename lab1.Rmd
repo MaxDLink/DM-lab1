@@ -4,9 +4,9 @@ Authors: Max Link, Logan Lu, Jadon Klipsch
 Date: "2025-02-21"
 Description: "In this project, we will focus on cleaning and understanding the data.
   We will follow the Crisp-DM framework"
-<!--output:
+output:
   pdf_document:
-    latex_engine: xelatex-->
+    latex_engine: xelatex
   
 ---
 
@@ -57,13 +57,13 @@ We have quite a few missing values in the mobility data. We can get rid of them 
 # Excluded holiday dates that would have misrepresented covid effects
 excluded_dates <- as.Date(c("2020-12-25	", "2020-11-26", "2020-04-12", "2021-01-01"))  
 
-# New clean mobility to exclude holiday dates
+# Clean mobility to exclude holiday dates
 cmd <- mobility_data |>
   filter(!is.na(retail_and_recreation_percent_change_from_baseline)) |>
   filter(country_region == "United States") |> 
-  filter(sub_region_2 != "") |> 
+  filter(sub_region_2 != "") |> # getting rid of blanks
   filter(sub_region_1 != "") |> 
-  select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> 
+  select(-metro_area, -iso_3166_2_code, -census_fips_code, -country_region_code) |> # removing unecessary columns
   mutate(date = as.Date(date)) |> 
   filter(!date %in% excluded_dates)
 
@@ -445,9 +445,7 @@ head(texas_cases, 5)
 
 ```
 
-county_fips_code --\> standardize & ensure consistency for merging with other .csvs. Use county_fips code as primary key for geographic joins. county_fips compatible with U.S. country level data. Coordinate with state pip in clean_cases_plus_final.csv to match all texas with their texas pips
-
-state_fips_Code --\> standardize & ensure consistency for merging with other .csvs
+We can standardize county_fips_code and state_fips_Code 
 
 ```{r}
 # make county_fips_code five digits 
@@ -566,9 +564,9 @@ write.csv(texas_cases_with_growth_rate, "texas_cases_with_growth_rate.csv", row.
 
 ```
 
-We added two new columns called cases_growth_rate and death_growth_rate. These columns show the growth rate of the cases and deaths, respectively. The deaths do not show as high a growth rate as the cases. We can make a chart to show this.  
+We added two new columns called cases_growth_rate and death_growth_rate. These columns show the growth rate of the cases and deaths, respectively. The deaths do not show as high a growth rate as the cases. We can make a chart to show this. We want to look at the death and growth rate so that we can understand how government policy shaped covid.  
 
-```{r, fig.width=10}
+```{r}
 # chart to show cases growth rate versus deaths growth rate per county 
 library(dplyr)
 library(ggplot2)
@@ -630,7 +628,8 @@ ggplot(statewide_long, aes(x = date, y = growth_rate, color = metric, fill = met
 
 ```
 
-There are more cases than there are deaths.The growth rates for the cases vary by a significant amount, so we can capture finer changes by making another graph with a log scale. This log scale can show us smaller changes if we pick a small scale like 0.1% to 1000%
+There are more cases than there are deaths.The growth rates for the cases vary by a significant amount, so we can capture finer changes by making another graph with a log scale. This log scale can show us smaller changes if we pick a small scale like 0.1% to 1000%. We can correlate this graph with real time events. Through this, we can understand how government policy shaped covid. 
+
 ```{r, fig.width=10}
 
 library(dplyr)
